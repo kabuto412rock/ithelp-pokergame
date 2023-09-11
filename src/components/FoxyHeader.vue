@@ -11,19 +11,21 @@
 <style scoped>
 header {
     background-color: #f0f0f0;
-    display: flex;
     padding: 1rem;
-    width: 100vw;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    overflow-x: visible;
     max-height: 20vh;
     text-align: left;
+    overflow: hidden;
 }
 
 header div {
-    font-size: 2.5rem;
-    height: auto;
+    font-size: 2rem;
 }
 
-div img.foxyHead {
+header img.foxyHead {
     display: inline-block;
     width: 5rem;
     height: 5rem;
