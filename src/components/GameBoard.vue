@@ -1,16 +1,16 @@
 <script setup>
+import { ref } from "vue";
 import Card from "./Card.vue";
-const CardSymbols = Object.freeze(['♣', '♦', '♥', '♠']);
+const boardCards = ref(
+    new Array(52)
+        .fill(1).map((v, index) => ({ value: index, isShow: true }))
+);
 
 </script>
 <template>
     <div class="game-board">
         <div class="card-row">
-
-            <Card :symbol="CardSymbols[0]" :num="1" />
-            <Card :symbol="CardSymbols[0]" :num="2" />
-            <Card :symbol="CardSymbols[0]" :num="3" />
-            <Card :symbol="CardSymbols[0]" :num="4" />
+            <Card v-for="card in boardCards" key="card.value" :value="card.value" />
         </div>
     </div>
 </template>
@@ -31,5 +31,7 @@ div.game-board {
 .card-row {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+    /* ignore */
 }
 </style>

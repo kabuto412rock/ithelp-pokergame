@@ -1,12 +1,18 @@
 <script setup>
-defineProps({
-    symbol: String,
-    num: Number
+import { PokerValuesMap } from "../utils/constants";
+const props = defineProps({
+    value: Number,
+    isOpen: Boolean
 });
+const pokerValue = props.value;
+// 對應撲克花色符號，Ex: ♣A
+const content = PokerValuesMap[pokerValue].content;
+// 對應撲克顏色class
+const numberClass = PokerValuesMap[pokerValue].isRed ? 'card card-red' : 'card';
 </script>
 <template>
-    <div class="card">
-        <div>{{ symbol }}{{ num }}</div>
+    <div :class="numberClass">
+        <div>{{ content }}</div>
     </div>
 </template>
 <style scoped>
@@ -20,5 +26,9 @@ div.card {
     background-color: white;
     padding: 3px;
     font-size: var(--card-font-size);
+}
+
+.card-red {
+    color: red;
 }
 </style>

@@ -3,7 +3,7 @@
 </script>
 <template>
     <header>
-        <div>無撲克遊戲</div>
+        <div>撲克遊戲52張牌</div>
         <img src="../assets/imgs/foxy01.jpg" class="foxyHead" />
     </header>
 </template>
@@ -14,7 +14,6 @@ header {
     display: flex;
     align-items: center;
     width: fit-content;
-    overflow-x: visible;
     max-height: 100px;
     text-align: center;
     overflow: hidden;
