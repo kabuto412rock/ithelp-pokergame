@@ -10,14 +10,13 @@
 
 <style scoped>
 header {
-    background-color: #f0f0f0;
     padding: 1rem;
     display: flex;
     align-items: center;
     width: fit-content;
     overflow-x: visible;
-    max-height: 20vh;
-    text-align: left;
+    max-height: 100px;
+    text-align: center;
     overflow: hidden;
 }
 

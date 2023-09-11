@@ -4,16 +4,17 @@ import GameBoard from './components/GameBoard.vue'
 </script>
 
 <template>
-  <FoxyHeader />
+  <header>
+  </header>
   <main>
+    <FoxyHeader />
     <GameBoard />
   </main>
 </template>
 
 <style scoped>
 main {
-  width: 100%;
-  margin: 0 auto;
-  border: 3px solid black;
+  display: flex;
+  flex-wrap: wrap;
 }
 </style>
