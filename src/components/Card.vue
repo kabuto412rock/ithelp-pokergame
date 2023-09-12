@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted } from "vue";
 import { PokerValuesMap } from "../utils/constants";
 const props = defineProps({
     value: Number,
@@ -9,16 +10,15 @@ const pokerValue = props.value;
 const content = PokerValuesMap[pokerValue].content;
 // 對應撲克顏色class
 const numberClass = PokerValuesMap[pokerValue].isRed ? 'card-red' : '';
-const isOpenClass = props.isOpen ? '' : 'card-back ';
 </script>
 <template>
-    <div class="card">
+    <div class="card card-to-back">
         <div class="card-front" :class="numberClass">{{ content }}</div>
         <div class="card-back"></div>
     </div>
 </template>
 <style scoped>
-@keyframes card-rotate {
+@keyframes card-rotate-to-back {
     0% {
         transform: rotateY(0);
     }
@@ -28,9 +28,8 @@ const isOpenClass = props.isOpen ? '' : 'card-back ';
     }
 }
 
-.card:hover {
-    /** 結束後不會恢復原狀 */
-    animation: card-rotate 0.5s forwards;
+.card-to-back {
+    animation: card-rotate-to-back 0.5s ease-in-out forwards;
 }
 
 .card {
@@ -65,16 +64,14 @@ div.card-back {
     left: 5%;
     width: 90%;
     height: 95%;
-    /*hide backface*/
+    /* 背圖 */
     background: url("http://127.0.0.1:5173/src/assets/imgs/foxy01.jpg") no-repeat center;
+    /** hidden backface */
     backface-visibility: hidden;
-    /** 避免超出背圖超出卡片 */
+    /* 使用 cover 屬性讓背景圖包裹在容器內 */
     background-size: cover;
-    /* 使用 cover 属性来适应容器 */
-
     /*flip card-back behind card-front*/
     transform: rotateY(180deg);
-
 }
 
 .card-red {

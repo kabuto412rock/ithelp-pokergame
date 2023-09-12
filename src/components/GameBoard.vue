@@ -3,7 +3,7 @@ import { ref } from "vue";
 import Card from "./Card.vue";
 const boardCards = ref(
     new Array(14)
-        .fill(1).map((v, index) => ({ value: index, isShow: (index % 2 == 0) }))
+        .fill(1).map((v, index) => ({ value: index, isOpen: true }))
 );
 
 </script>
