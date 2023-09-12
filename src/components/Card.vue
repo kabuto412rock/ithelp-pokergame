@@ -1,18 +1,24 @@
 <script setup>
-import { onMounted } from "vue";
+import { computed } from "vue";
 import { PokerValuesMap } from "../utils/constants";
 const props = defineProps({
     value: Number,
     isOpen: Boolean
 });
+const emit = defineEmits(["poker-flip"]);
 const pokerValue = props.value;
 // 對應撲克花色符號，Ex: ♣A
 const content = PokerValuesMap[pokerValue].content;
 // 對應撲克顏色class
 const numberClass = PokerValuesMap[pokerValue].isRed ? 'card-red' : '';
+// 蓋牌效果
+let backCardClass = computed(() => {
+    return !props.isOpen ? 'card-to-back' : '';
+});
+
 </script>
 <template>
-    <div class="card card-to-back">
+    <div class="card " @click="emit('poker-flip', value)" :class="backCardClass">
         <div class="card-front" :class="numberClass">{{ content }}</div>
         <div class="card-back"></div>
     </div>

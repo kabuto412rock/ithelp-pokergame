@@ -3,14 +3,20 @@ import { ref } from "vue";
 import Card from "./Card.vue";
 const boardCards = ref(
     new Array(14)
-        .fill(1).map((v, index) => ({ value: index, isOpen: true }))
+        .fill(1).map((v, index) => ({ value: index, isOpen: false }))
 );
-
+function toggleFlip(num) {
+    console.log(num);
+    // 找到對應的牌，並且翻牌
+    const targetIdx = boardCards.value.findIndex((item) => item.value === num)
+    boardCards.value[targetIdx].isOpen = !boardCards.value[targetIdx].isOpen;
+}
 </script>
 <template>
     <div class="game-board">
         <div class="card-row">
-            <Card v-for="card in boardCards" key="card.value" :value="card.value" />
+            <Card v-for="card in boardCards" key="card.value" :value="card.value" :isOpen="card.isOpen"
+                @poker-flip="toggleFlip" />
         </div>
     </div>
 </template>
