@@ -20,7 +20,7 @@ const numberClass = PokerValuesMap[pokerValue].isRed ? 'card-red' : '';
         <div>{{ content }}</div>
     </div>
     <div v-show="!isDone" class="card " @click="emit('poker-flip', value)">
-        <Transition name="card-flip" @click="isOPen = !isOPen">
+        <Transition name="card-flip">
             <div v-if="isOpen" class="card-front" :class="numberClass">{{ content }}</div>
             <div v-else class="card-back"></div>
         </Transition>
