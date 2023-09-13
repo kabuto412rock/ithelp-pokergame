@@ -3,7 +3,7 @@
 </script>
 <template>
     <header>
-        <div>撲克遊戲52張牌</div>
+        <div>撲克牌連連看</div>
         <img src="../assets/imgs/foxy01.jpg" class="foxyHead" />
     </header>
 </template>

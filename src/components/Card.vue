@@ -3,7 +3,8 @@ import { computed } from "vue";
 import { PokerValuesMap } from "../utils/constants";
 const props = defineProps({
     value: Number,
-    isOpen: Boolean
+    isOpen: Boolean,
+    isDone: Boolean,
 });
 const emit = defineEmits(["poker-flip"]);
 const pokerValue = props.value;
@@ -15,7 +16,10 @@ const numberClass = PokerValuesMap[pokerValue].isRed ? 'card-red' : '';
 
 </script>
 <template>
-    <div class="card " @click="emit('poker-flip', value)">
+    <div v-show="isDone" class="card card-done">
+        <div>{{ content }}</div>
+    </div>
+    <div v-show="!isDone" class="card " @click="emit('poker-flip', value)">
         <Transition name="card-flip" @click="isOPen = !isOPen">
             <div v-if="isOpen" class="card-front" :class="numberClass">{{ content }}</div>
             <div v-else class="card-back"></div>
@@ -34,7 +38,7 @@ const numberClass = PokerValuesMap[pokerValue].isRed ? 'card-red' : '';
 }
 
 .card {
-    --card-font-size: 1.5rem;
+    --card-font-size: 2rem;
     --card-width: 5rem;
     --card-height: calc(var(--card-width)*1.5);
     width: var(--card-width);
@@ -71,5 +75,10 @@ div.card-back {
 
 .card-red {
     color: red;
+}
+
+.card-done {
+    background-color: green;
+    color: balck;
 }
 </style>
