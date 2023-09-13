@@ -11,31 +11,26 @@ const pokerValue = props.value;
 const content = PokerValuesMap[pokerValue].content;
 // 對應撲克顏色class
 const numberClass = PokerValuesMap[pokerValue].isRed ? 'card-red' : '';
-// 蓋牌效果
-let backCardClass = computed(() => {
-    return !props.isOpen ? 'card-to-back' : '';
-});
+
 
 </script>
 <template>
-    <div class="card " @click="emit('poker-flip', value)" :class="backCardClass">
-        <div class="card-front" :class="numberClass">{{ content }}</div>
-        <div class="card-back"></div>
+    <div class="card " @click="emit('poker-flip', value)">
+        <Transition name="card-flip" @click="isOPen = !isOPen">
+            <div v-if="isOpen" class="card-front" :class="numberClass">{{ content }}</div>
+            <div v-else class="card-back"></div>
+        </Transition>
     </div>
 </template>
 <style scoped>
-@keyframes card-rotate-to-back {
-    0% {
-        transform: rotateY(0);
-    }
-
-    100% {
-        transform: rotateY(180deg);
-    }
+.card-flip-enter-active,
+.card-flip-leave-active {
+    transition: all 0.5s ease-out;
 }
 
-.card-to-back {
-    animation: card-rotate-to-back 0.5s ease-in-out forwards;
+.card-flip-enter-from,
+.card-flip-leave-to {
+    opacity: 0;
 }
 
 .card {
@@ -60,8 +55,6 @@ let backCardClass = computed(() => {
 
 div.card-front {
     padding: 3px;
-
-    transform: translateZ(0px);
 }
 
 div.card-back {
@@ -72,12 +65,8 @@ div.card-back {
     height: 95%;
     /* 背圖 */
     background: url("http://127.0.0.1:5173/src/assets/imgs/foxy01.jpg") no-repeat center;
-    /** hidden backface */
-    backface-visibility: hidden;
     /* 使用 cover 屬性讓背景圖包裹在容器內 */
     background-size: cover;
-    /*flip card-back behind card-front*/
-    transform: rotateY(180deg);
 }
 
 .card-red {
