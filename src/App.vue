@@ -1,22 +1,14 @@
 <script setup>
-import FoxyHeader from './components/FoxyHeader.vue'
-import GameBoard from './components/GameBoard.vue'
+import { RouterView, RouterLink } from 'vue-router';
 </script>
-
 <template>
   <header>
+    <nav>
+      <RouterLink to="/">Home</RouterLink>
+      <RouterLink to="/game1">撲克牌連連看</RouterLink>
+    </nav>
   </header>
-  <main>
-    <FoxyHeader />
-    <GameBoard />
-  </main>
+  <RouterView />
 </template>
 
-<style scoped>
-main {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  height: 100%;
-}
-</style>
+
