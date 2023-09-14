@@ -1,9 +1,25 @@
 @import './base.css';
 
-
+:root{
+  
+  --card-font-size: 2rem;
+  --card-width: 5rem;
+  --card-height: calc(var(--card-width)*1.5);
+}
 #app {
   max-width: 1280px;
   margin: 0 auto;
   padding: 1rem;
   font-weight: normal;
 } 
+.card {
+  width: var(--card-width);
+  height: var(--card-height);
+  border: 1px solid black;
+  border-radius: 5%;
+  background-color: white;
+  margin-right: 10px;
+  font-size: var(--card-font-size);
+  transform-style: preserve-3d;
+}
+

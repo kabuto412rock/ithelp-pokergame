@@ -38,6 +38,12 @@ import { RouterView, RouterLink } from 'vue-router';
   color: #ff4500;
   /* 滑鼠浮過時的顏色 */
 }
+
+/* 對應路徑連結已選中的樣式 */
+.router-link-active {
+  color: #ff4500;
+  font-weight: bold;
+}
 </style>
 
 

@@ -37,19 +37,6 @@ const numberClass = PokerValuesMap[pokerValue].isRed ? 'card-red' : '';
     opacity: 0;
 }
 
-.card {
-    --card-font-size: 2rem;
-    --card-width: 5rem;
-    --card-height: calc(var(--card-width)*1.5);
-    width: var(--card-width);
-    height: var(--card-height);
-    border: 1px solid black;
-    border-radius: 5%;
-    background-color: white;
-    margin-right: 10px;
-    font-size: var(--card-font-size);
-    transform-style: preserve-3d;
-}
 
 .card div {
     display: block;
