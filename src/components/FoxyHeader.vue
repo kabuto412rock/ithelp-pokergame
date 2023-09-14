@@ -3,7 +3,9 @@
 </script>
 <template>
     <header>
-        <div>撲克牌連連看</div>
+        <div>
+            <slot>No child component passed in</slot>
+        </div>
         <img src="../assets/imgs/foxy01.jpg" class="foxyHead" />
     </header>
 </template>

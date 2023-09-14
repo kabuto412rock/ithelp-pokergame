@@ -1,11 +1,11 @@
 <script setup>
-import FoxyHeader from '@/components/FoxyHeader.vue'
-import GameBoard from '@/components/GameBoard.vue'
+import FoxyHeader from '../components/FoxyHeader.vue'
+import GameBoard from '../components/GameBoard.vue'
 
 </script>
 <template setup>
     <main>
-        <FoxyHeader />
+        <FoxyHeader>撲克牌連連看</FoxyHeader>
         <GameBoard />
     </main>
 </template>
