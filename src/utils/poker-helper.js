@@ -19,22 +19,33 @@ function shuffle(deck) {
     }
     return deck;
 }
-
-/** 洗好的撲克牌
- * @returns {Card[]} 洗好的撲克牌
- */
-function geneateShuffleDeck(n=52) {
+/** 產生撲克牌，預設52張
+ * @returns {Card[]} 撲克牌
+ * @param {Number} n - 撲克牌數量
+ * @default 52
+ * @example
+ * geneateDeck(52) // 產生52張撲克牌
+ **/
+function geneateDeck(n=52, isOpen=false) {
     let deck = [];
     for (let i = 0; i < n; i++) {
         deck.push({
             value: i,
-            isOpen: false,
+            isOpen: isOpen,
             isDone: false
         });
     }
+    return deck;
+}
+/** 洗好的撲克牌
+ * @returns {Card[]} 洗好的撲克牌
+ */
+function geneateShuffleDeck(n=52) {
+    let deck = geneateDeck(n);
     return shuffle(deck);
 }
 
 export {
     geneateShuffleDeck,
+    geneateDeck
 }
