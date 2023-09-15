@@ -23,9 +23,9 @@ function shuffle(deck) {
 /** 洗好的撲克牌
  * @returns {Card[]} 洗好的撲克牌
  */
-function geneateShuffleDeck() {
+function geneateShuffleDeck(n=52) {
     let deck = [];
-    for (let i = 0; i < 52; i++) {
+    for (let i = 0; i < n; i++) {
         deck.push({
             value: i,
             isOpen: false,
