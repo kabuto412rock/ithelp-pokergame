@@ -6,7 +6,7 @@ export const PokerValuesMap = Object.freeze(
             let symbolIndex = Math.floor(idx/13);
             return {
                 content: `${PokerSymbols[symbolIndex]+PokerNumbers[idx % 13]}`,
-                isRed: symbolIndex%3 > 0  
+                isRed: symbolIndex%3 > 0,
             };
         })
     );

@@ -9,10 +9,9 @@ const props = defineProps({
 const emit = defineEmits(["poker-flip"]);
 const pokerValue = props.value;
 // 對應撲克花色符號，Ex: ♣A
-const content = PokerValuesMap[pokerValue].content;
+const content = PokerValuesMap[pokerValue]?.content ?? '';
 // 對應撲克顏色class
-const numberClass = PokerValuesMap[pokerValue].isRed ? 'card-red' : '';
-
+const numberClass = PokerValuesMap[pokerValue]?.isRed ? 'card-red' : '';
 
 </script>
 <template>
@@ -55,7 +54,7 @@ div.card-back {
     width: 90%;
     height: 95%;
     /* 背圖 */
-    background: url("http://127.0.0.1:5173/src/assets/imgs/foxy01.jpg") no-repeat center;
+    background: url("@/assets/imgs/foxy01.jpg") no-repeat center;
     /* 使用 cover 屬性讓背景圖包裹在容器內 */
     background-size: cover;
 }

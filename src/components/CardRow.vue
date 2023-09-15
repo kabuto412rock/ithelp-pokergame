@@ -1,6 +1,8 @@
 <template scoped>
     <div class="card-row">
-        <slot>沒有卡片喔...</slot>
+        <slot>
+            <div class="card" style="visibility: hidden;"></div>
+        </slot>
     </div>
 </template>
 
