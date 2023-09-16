@@ -1,10 +1,9 @@
 <script setup>
 
 
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import GameBoard from '../components/GameBoard.vue';
 import CardBox from '../components/CardBox.vue';
-import Card from '../components/Card.vue';
 import { geneateDeck, getPosition } from "../utils/poker-helper";
 import CardColumn from '../components/CardColumn.vue';
 const fstCards = ref(geneateDeck(13, true));
@@ -13,7 +12,6 @@ const secondCards = ref([]);
 const fstCardsPos = ref({ x: 0, y: 0 });
 const secondCardsPos = ref({ x: 0, y: 0 });
 // 
-const shadowCard = ref(null);
 
 const moveCardFromAToB = (target) => {
   const { x, y } = getPosition(target);
@@ -28,24 +26,14 @@ const moveCardFromAToB = (target) => {
   secondCards.value.push(card);
 };
 const moveCardFromBToA = (target) => {
-  const { x, y } = getPosition(target);
-  console.log(`B to A target: x: ${x}, y: ${y}`);
-  console.log(`B: ${secondCardsPos.value.x}, ${secondCardsPos.value.y}`);
   const card = secondCards.value.pop();
   if (card === undefined) return;
   fstCards.value.push(card);
 };
-
-onMounted(() => {
-  // console.log(shadowCard.value);
-
-})
 </script>
 <template>
   <main>
-    <div ref="shadowCard" style="position: absolute; z-index: -1;">
-      <Card :value="20" :isOpen="false" />
-    </div>
+
     <GameBoard>
       <div style="display: grid;  grid-template-columns: 1fr 1fr 1fr 1fr;">
         <div>第1卡堆: </div>
