@@ -32,7 +32,7 @@ const moveCardFromBToA = () => {
         <CardBox @Click="moveCardFromAToB" :cards="fstCards"></CardBox>
         <CardBox @Click="moveCardFromBToA" :cards="secondCards"></CardBox>
         <CardColumn @Click="moveCardFromAToB" :cards="fstCards"></CardColumn>
-        <CardColumn @Click="moveCardFromBToA" :cards="secondCards"></CardColumn>
+        <CardColumn :onClick="moveCardFromBToA" :cards="secondCards"></CardColumn>
       </div>
     </GameBoard>
   </main>
