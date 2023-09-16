@@ -45,7 +45,14 @@ function geneateShuffleDeck(n=52) {
     return shuffle(deck);
 }
 
+function getPosition(element) {
+    const rect = element.getBoundingClientRect();
+    const x = window.scrollX + rect.left;
+    const y = window.scrollY + rect.top;
+    return {x, y}
+}
 export {
     geneateShuffleDeck,
-    geneateDeck
+    geneateDeck,
+    getPosition
 }
