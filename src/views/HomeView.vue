@@ -31,7 +31,7 @@ const moveCardFromBToA = () => {
         <div>第2卡堆: </div>
         <CardBox @Click="moveCardFromAToB" :cards="fstCards"></CardBox>
         <CardBox @Click="moveCardFromBToA" :cards="secondCards"></CardBox>
-        <CardColumn @Click="moveCardFromAToB" :cards="fstCards"></CardColumn>
+        <CardColumn :onClick="moveCardFromAToB" :cards="fstCards"></CardColumn>
         <CardColumn :onClick="moveCardFromBToA" :cards="secondCards"></CardColumn>
       </div>
     </GameBoard>
