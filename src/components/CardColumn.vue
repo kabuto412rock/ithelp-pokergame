@@ -11,7 +11,7 @@ const isEmpty = computed(() => {
         <div class="card" style="visibility: hidden;"></div>
         <div style="visibility: visible; position: absolute; z-index: 5;">
             <div v-if="isEmpty">沒牌</div>
-            <div v-else style="; display: grid; grid-template-rows: repeat(5, 3rem);">
+            <div v-else style="; display: grid; grid-template-rows: repeat(13, 2rem);">
                 <Card v-for="(card, index) in cards" @click="onClick" :key="card.value" :value="card.value"
                     :isOpen="card.isOpen" />
             </div>
