@@ -33,4 +33,24 @@ const isEmpty = computed(() => {
     background-color: #2c3e50;
     color: white;
 }
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(5, 100px);
+    /* 默认情况下，创建5列，每列宽度为100px */
+    grid-gap: 10px;
+    /* 列之间的间隙*/
+}
+
+.grid-item {
+    height: 100px;
+    background-color: #3498db;
+    color: #fff;
+    text-align: center;
+    line-height: 100px;
+}
+
+.grid-item:nth-child(1) {
+    /* margin-left: -50px * ($i - 1); */
+}
 </style>
