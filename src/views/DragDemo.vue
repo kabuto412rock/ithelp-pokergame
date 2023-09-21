@@ -7,7 +7,7 @@ import Card from '../components/Card.vue';
 const first = ref(null);
 const second = ref(null);
 const cardStacks = reactive({
-    first: geneateDeck(10, true),
+    first: geneateDeck(13, true),
     second: [],
     none: []
 });
@@ -23,15 +23,17 @@ function getDomName(dom) {
 }
 function limitLocalMove(evt) {
     // 限制同個牌堆無法拖曳
-    const result = evt.from !== evt.to;
+    let result = evt.from !== evt.to;
+
+    // 取得牌堆的來源、目標名稱，對應reactive`cardStacks`內的名稱
+    const from = getDomName(evt.from);
+    const to = getDomName(evt.to);
+    const { index, futureIndex } = evt.draggedContext;
+
+    // 只能移動目標牌堆的最後一張牌
+    result = result && futureIndex == cardStacks[to].length;
+
     if (result) {
-        // 取得牌堆的來源、目標名稱，對應reactive`cardStacks`內的名稱
-        const from = getDomName(evt.from);
-        const to = getDomName(evt.to);
-        console.log(`:moved from: ${from}, to: ${to}`);
-        const draggedContext = evt.draggedContext
-        const { index, futureIndex } = draggedContext;
-        console.log(`index, futureIndex = ${index}, ${futureIndex}`);
         // 多筆拖曳後，來源牌堆、目的牌堆的陣列變動後的結果
         const newFromCards = cardStacks[from].slice(0, index);
         const newToCards = [
@@ -39,9 +41,6 @@ function limitLocalMove(evt) {
             ...cardStacks[from].slice(index),
             ...cardStacks[to].slice(futureIndex)
         ];
-        console.log(`newFromCards = ${newFromCards.map((card) => card.value).join(',')}`);
-        console.log(`newToCards = ${newToCards.map((card) => card.value).join(',')}`);
-        // 將變動牌堆的函數暫存，預計等到拖曳完成後執行
         changeOption.value = () => {
             cardStacks[from] = newFromCards;
             cardStacks[to] = newToCards;
