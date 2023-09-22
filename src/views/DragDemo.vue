@@ -1,9 +1,13 @@
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+/**
+ * @typedef {import('../../@types/index').Card} Card
+ */
+import { onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
 import { geneateDeck } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
 import Card from '../components/Card.vue';
+
 const first = ref(null);
 const second = ref(null);
 const third = ref(null);
@@ -18,6 +22,16 @@ onMounted(() => {
     cardStacks.first = data.slice(0, 13);// 梅花A~梅花K
     cardStacks.second = data.slice(13, 26);// 方塊A~~方塊K
     cardStacks.third = data.slice(26); // 紅心A~~紅心K
+});
+
+watch(cardStacks, (stacks) => {
+    // 檢查每組牌堆最後一張
+    ['first', 'second', 'third'].forEach(cardName => {
+        if (stacks[cardName].length > 0) {
+            const lastCard = stacks[cardName][stacks[cardName].length - 1];
+            lastCard.isOpen = true;
+        }
+    });
 });
 const changeOption = ref(null);
 function getDomName(dom) {
@@ -72,6 +86,16 @@ function cardChange(event) {
         console.log(`no trigger changeOption`);
     };
 }
+/** 開牌函數 
+ * @param {Card[]} cards 
+ * @param {Card} element 
+ */
+function openCard(cards, element) {
+    let same = cards[cards.length - 1].value == element.value;
+    if (same) {
+        element.isOpen = true;
+    }
+}
 </script>
 <template>
     <main>
@@ -82,7 +106,8 @@ function cardChange(event) {
                     style="display: grid; grid-template-columns: repeat(26, 3rem); background-color: yellow;"
                     :move="limitLocalMove" @change="cardChange" ref="first">
                     <template #item="{ element, index }">
-                        <Card :value="element.value" :isOpen="element.isOpen" @click="() => element.isOpen = true" />
+                        <Card :value="element.value" :isOpen="element.isOpen"
+                            @click="openCard(cardStacks.first, element)" />
                     </template>
                 </draggable>
             </div>
@@ -92,7 +117,8 @@ function cardChange(event) {
                     style="display: grid; grid-template-columns: repeat(26, 3rem); background-color: yellow;padding: 1px;"
                     :move="limitLocalMove" @change="cardChange" ref="second">
                     <template #item="{ element, index }">
-                        <Card :value="element.value" :isOpen="element.isOpen" @click="() => element.isOpen = true" />
+                        <Card :value="element.value" :isOpen="element.isOpen"
+                            @click="openCard(cardStacks.second, element)" />
                     </template>
                 </draggable>
             </div>
@@ -102,7 +128,8 @@ function cardChange(event) {
                     style="display: grid; grid-template-columns: repeat(26, 3rem); background-color: yellow;padding: 1px;"
                     :move="limitLocalMove" @change="cardChange" ref="third">
                     <template #item="{ element, index }">
-                        <Card :value="element.value" :isOpen="element.isOpen" @click="() => element.isOpen = true" />
+                        <Card :value="element.value" :isOpen="element.isOpen"
+                            @click="openCard(cardStacks.third, element)" />
                     </template>
                 </draggable>
             </div>

@@ -1,8 +1,5 @@
 /**
- * 撲克牌
- * @typedef {Object} Card
- * @property {Number} value - 點數(0~52)
- * @property {boolean} isOpen - 是否已翻開  
+ * @typedef {import('../../@types/index').Card} Card
  */
 /**
  * 洗撲克牌
@@ -12,9 +9,9 @@
 function shuffle(deck) {
     let length = deck.length;
     for (let i = 0; i < length; i++) {
-        let rand_to_swap = Math.floor(Math.random()*(length-i));
-        let tmp = deck[length-1-i];
-        deck[length-1-i] = deck[rand_to_swap];
+        let rand_to_swap = Math.floor(Math.random() * (length - i));
+        let tmp = deck[length - 1 - i];
+        deck[length - 1 - i] = deck[rand_to_swap];
         deck[rand_to_swap] = tmp;
     }
     return deck;
@@ -26,7 +23,7 @@ function shuffle(deck) {
  * @example
  * geneateDeck(52) // 產生52張撲克牌
  **/
-function geneateDeck(n=52, isOpen=false) {
+function geneateDeck(n = 52, isOpen = false) {
     let deck = [];
     for (let i = 0; i < n; i++) {
         deck.push({
@@ -40,7 +37,7 @@ function geneateDeck(n=52, isOpen=false) {
 /** 洗好的撲克牌
  * @returns {Card[]} 洗好的撲克牌
  */
-function geneateShuffleDeck(n=52) {
+function geneateShuffleDeck(n = 52) {
     let deck = geneateDeck(n);
     return shuffle(deck);
 }
@@ -49,7 +46,7 @@ function getPosition(element) {
     const rect = element.getBoundingClientRect();
     const x = window.scrollX + rect.left;
     const y = window.scrollY + rect.top;
-    return {x, y}
+    return { x, y }
 }
 export {
     geneateShuffleDeck,
