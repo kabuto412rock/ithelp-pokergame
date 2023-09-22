@@ -48,8 +48,34 @@ function getPosition(element) {
     const y = window.scrollY + rect.top;
     return { x, y }
 }
+
+/** 檢查下一張牌是否可以放上去
+ * @param {Card[]} targetDeck 
+ * @param {Card} card 
+ * 
+ * @returns {Boolean} 是否可以放上去
+ */
+function checkNextOk(targetDeck, card) {
+    // 如果目標為空牌堆，則只有K可以放上去
+    if (targetDeck.length === 0) {
+        return (card.value % 13) === 12;
+    }
+    // 如果目標非空牌堆，則檢查最後一張
+    const lastCard = targetDeck[targetDeck.length - 1];
+    // 取得兩張牌花色必須一紅一黑
+    const lastCardSymbol = Math.floor(lastCard.value / 13);
+    const cardSymbol = Math.floor(card.value / 13);
+    // 兩張牌顏色相同則移動無效
+    if (lastCardSymbol == cardSymbol || (lastCardSymbol + cardSymbol) == 3) {
+        return false;
+    }
+    // 檢查數字是否連續
+    return (lastCard.value % 13 - 1) == (card.value % 13)
+}
+
 export {
     geneateShuffleDeck,
     geneateDeck,
-    getPosition
+    getPosition,
+    checkNextOk
 }
