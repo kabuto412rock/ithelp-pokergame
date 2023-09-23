@@ -20,7 +20,13 @@ const router = createRouter({
       name: 'dragdemo',
       // Lazy Loading
       component: () => import('../views/DragDemo.vue')
-    }
+    },
+    {
+      path: '/dealer-area',
+      name: 'dealer-area-practice',
+      // Lazy Loading
+      component: () => import('../views/DealerAreaView.vue')
+    },
   ]
 })
 

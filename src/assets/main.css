@@ -21,5 +21,6 @@
   font-size: var(--card-font-size);
   transform-style: preserve-3d;
   user-select: none;
+  position: relative;;
 }
 
