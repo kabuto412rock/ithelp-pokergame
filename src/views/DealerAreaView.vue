@@ -30,7 +30,7 @@ const deckState = computed(() => {
     <main>
         <GameBoard>
             <div class="text">發牌區</div>
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap:3rem; width: fit-content;">
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap:3rem; width: fit-content; overflow-x: hidden;">
                 <!-- 移牌區 - 左邊水平疊牌最多三張 -->
                 <draggable :list="canTakeCards" group="pokers" itemKey="value" class="list-group">
                     <template #item="{ element, index }">
@@ -39,12 +39,12 @@ const deckState = computed(() => {
                 </draggable>
                 <!-- 發牌堆 -->
                 <div class="card-box">
-                    <div class="card" style="visibility: hidden;">
-                        <div style="visibility: visible; width: 100%;height: 100%; ">
+                    <div class="card " style="visibility: hidden;">
+                        <div style="visibility: visible; width: 100%;height: 100%;" @click="clickCard">
                             <Transition name="slide-left">
                                 <div v-if="deckState == 'empty'">無牌可用</div>
-                                <div v-else-if="deckState == 'full'" class="card" @click="clickCard">重新循環</div>
-                                <div v-else-if="deckState == 'normal'" @click="clickCard" class="card-back"></div>
+                                <div v-else-if="deckState == 'full'" class="card">重新循環</div>
+                                <div v-else-if="deckState == 'normal'" class="card-back animation"></div>
                             </Transition>
                         </div>
                     </div>
@@ -78,6 +78,7 @@ const deckState = computed(() => {
     border: 3px solid yellow;
     padding: 3px;
     margin: 1px;
+    background-size: cover;
     /* display: flex; */
     /* flex-direction: column; */
     position: relative;
@@ -91,10 +92,46 @@ const deckState = computed(() => {
     background: url("@/assets/imgs/foxy01.jpg") no-repeat center;
     /* 使用 cover 屬性讓背景圖包裹在容器內 */
     background-size: cover;
+    border-radius: 10%;
 }
 
 .list-group {
     display: grid;
     grid-template-columns: repeat(3, 3rem);
+}
+
+/** */
+@keyframes move-left {
+    from {
+        transform: translateX(0rem);
+    }
+
+    to {
+        transform: translateX(-100rem);
+    }
+}
+
+.card-back.animation:active {
+    animation: move-left 0.55s ease;
+    animation-iteration-count: 1;
+}
+
+@keyframes swing {
+    0% {
+        transform: rotate(-5deg);
+    }
+
+    50% {
+        transform: rotate(5deg);
+    }
+
+    100% {
+        transform: rotate(-5deg);
+    }
+}
+
+.card-back:hover {
+    cursor: pointer;
+    animation: swing 1s ease infinite;
 }
 </style>
