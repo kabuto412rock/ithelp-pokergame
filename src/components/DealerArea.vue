@@ -1,38 +1,46 @@
 <script setup>
 import draggable from 'vuedraggable'
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Card from '../components/Card.vue';
-const { deck } = defineProps(
+const props = defineProps(
     {
         deck: {
             type: Array,
             default: () => []
+        },
+        moveCard: {
+            type: Function,
+            default: () => { return false; }
         }
     }
 )
 const index = ref(0);
-
+const deck = ref([]);
+watch(() => props.deck, (newVal) => {
+    deck.value = newVal;
+});
 function clickCard() {
     index.value++;
-    if (index.value > deck.length) {
+    if (index.value > deck.value.length) {
         index.value = 0;
     }
 }
 /** 玩家可拿取的牌 */
 const canTakeCards = computed(() => {
     let startIndex = index.value < 3 ? 0 : index.value - 3;
-    return deck.slice(startIndex, index.value);
+    return deck.value.slice(startIndex, index.value);
 });
 const deckState = computed(() => {
-    if (index.value === 0 && deck.length == 0) return 'empty';
-    if (index.value === deck.length) return 'full';
+    if (index.value === 0 && deck.value.length == 0) return 'empty';
+    if (index.value === deck.value.length) return 'full';
     return 'normal';
 });
+
 </script>
 <template>
     <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap:3rem; width: fit-content; overflow-x: hidden;">
         <!-- 移牌區 - 左邊水平疊牌最多三張 -->
-        <draggable :list="canTakeCards" group="pokers" itemKey="value" class="list-group" :move="(evt) => console.log(evt)">
+        <draggable :list="canTakeCards" group="pokers" itemKey="value" class="list-group" :move="moveCard">
             <template #item="{ element, index }">
                 <Card :value="element.value" :isOpen="element.isOpen" />
             </template>

@@ -4,10 +4,10 @@
  */
 import { onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
-import { geneateShuffleDeck, checkNextOk } from "../utils/poker-helper";
+import { geneateShuffleDeck, checkNextOk, geneateDeck } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
 import Card from '../components/Card.vue';
-
+import DealerArea from '../components/DealerArea.vue';
 const first = ref(null);
 const second = ref(null);
 const third = ref(null);
@@ -15,7 +15,7 @@ const fourth = ref(null);
 const fifth = ref(null);
 const sixth = ref(null);
 const seventh = ref(null);
-
+const delaerStacks = ref(null);
 const cardStacks = reactive({
     /** @type {Card[]} */ first: [],
     /** @type {Card[]} */ second: [],
@@ -24,15 +24,17 @@ const cardStacks = reactive({
     /** @type {Card[]} */ fifth: [],
     /** @type {Card[]} */ sixth: [],
     /** @type {Card[]} */ seventh: [],
-    /** @type {Card[]} */ none: []
+    /** @type {Card[]} */ none: [],
+    /** @type {Card[]} */ delaerStacks: [],
 });
-const validNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh'];
+const validNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'delaerStacks'];
 onMounted(() => {
-    const data = geneateShuffleDeck(28); // 梅花A~紅心2
-    const everyIndex = [0, 1, 3, 6, 10, 15, 21, 28]
+    const data = geneateShuffleDeck(52); // 梅花A~黑桃K
+    const everyIndex = [0, 1, 3, 6, 10, 15, 21, 28]// // 梅花A~紅心2
     validNames.forEach((name, idx) => {
         cardStacks[name] = data.slice(everyIndex[idx], everyIndex[idx + 1]);
     });
+    cardStacks.delaerStacks = data.slice(28).map(card => ({ ...card, isOpen: true }));
 });
 
 watch(cardStacks, (stacks) => {
@@ -60,6 +62,8 @@ function getDomName(dom) {
         return 'sixth';
     } else if (dom == seventh.value.targetDomElement) {
         return 'seventh';
+    } else if (dom == delaerStacks.value.targetDomElement) {
+        return 'delaerStacks';
     } else {
         return 'none';
     }
@@ -122,70 +126,75 @@ function openCard(cards, element) {
 </script>
 <template>
     <main>
-        <GameBoard style="display: grid;grid-template-columns: repeat(7, 1fr); overflow: auto;">
+        <GameBoard style="display: flex;">
             <div>
-                <draggable :list="cardStacks.first" group="pokers" itemKey="value" class="drag-cards" :move="limitLocalMove"
-                    @change="cardChange" ref="first">
-                    <template #item="{ element, index }">
-                        <Card :value="element.value" :isOpen="element.isOpen"
-                            @click="openCard(cardStacks.first, element)" />
-                    </template>
-                </draggable>
+                <DealerArea :deck="cardStacks.delaerStacks" ref="delaerStacks" />
             </div>
-            <div>
-                <draggable :list="cardStacks.second" group="pokers" itemKey="value" class="drag-cards"
-                    :move="limitLocalMove" @change="cardChange" ref="second">
-                    <template #item="{ element, index }">
-                        <Card :value="element.value" :isOpen="element.isOpen"
-                            @click="openCard(cardStacks.second, element)" />
-                    </template>
-                </draggable>
-            </div>
-            <div>
-                <draggable :list="cardStacks.third" group="pokers" itemKey="value" class="drag-cards" :move="limitLocalMove"
-                    @change="cardChange" ref="third">
-                    <template #item="{ element, index }">
-                        <Card :value="element.value" :isOpen="element.isOpen"
-                            @click="openCard(cardStacks.third, element)" />
-                    </template>
-                </draggable>
-            </div>
-            <div>
-                <draggable :list="cardStacks.fourth" group="pokers" itemKey="value" class="drag-cards"
-                    :move="limitLocalMove" @change="cardChange" ref="fourth">
-                    <template #item="{ element, index }">
-                        <Card :value="element.value" :isOpen="element.isOpen"
-                            @click="openCard(cardStacks.fourth, element)" />
-                    </template>
-                </draggable>
-            </div>
-            <div>
-                <draggable :list="cardStacks.fifth" group="pokers" itemKey="value" class="drag-cards" :move="limitLocalMove"
-                    @change="cardChange" ref="fifth">
-                    <template #item="{ element, index }">
-                        <Card :value="element.value" :isOpen="element.isOpen"
-                            @click="openCard(cardStacks.fifth, element)" />
-                    </template>
-                </draggable>
-            </div>
+            <div style="display: grid;grid-template-columns: repeat(7, 1fr); overflow:fit-content;">
+                <div>
+                    <draggable :list="cardStacks.first" group="pokers" itemKey="value" class="drag-cards"
+                        :move="limitLocalMove" @change="cardChange" ref="first">
+                        <template #item="{ element, index }">
+                            <Card :value="element.value" :isOpen="element.isOpen"
+                                @click="openCard(cardStacks.first, element)" />
+                        </template>
+                    </draggable>
+                </div>
+                <div>
+                    <draggable :list="cardStacks.second" group="pokers" itemKey="value" class="drag-cards"
+                        :move="limitLocalMove" @change="cardChange" ref="second">
+                        <template #item="{ element, index }">
+                            <Card :value="element.value" :isOpen="element.isOpen"
+                                @click="openCard(cardStacks.second, element)" />
+                        </template>
+                    </draggable>
+                </div>
+                <div>
+                    <draggable :list="cardStacks.third" group="pokers" itemKey="value" class="drag-cards"
+                        :move="limitLocalMove" @change="cardChange" ref="third">
+                        <template #item="{ element, index }">
+                            <Card :value="element.value" :isOpen="element.isOpen"
+                                @click="openCard(cardStacks.third, element)" />
+                        </template>
+                    </draggable>
+                </div>
+                <div>
+                    <draggable :list="cardStacks.fourth" group="pokers" itemKey="value" class="drag-cards"
+                        :move="limitLocalMove" @change="cardChange" ref="fourth">
+                        <template #item="{ element, index }">
+                            <Card :value="element.value" :isOpen="element.isOpen"
+                                @click="openCard(cardStacks.fourth, element)" />
+                        </template>
+                    </draggable>
+                </div>
+                <div>
+                    <draggable :list="cardStacks.fifth" group="pokers" itemKey="value" class="drag-cards"
+                        :move="limitLocalMove" @change="cardChange" ref="fifth">
+                        <template #item="{ element, index }">
+                            <Card :value="element.value" :isOpen="element.isOpen"
+                                @click="openCard(cardStacks.fifth, element)" />
+                        </template>
+                    </draggable>
+                </div>
 
-            <div>
-                <draggable :list="cardStacks.sixth" group="pokers" itemKey="value" class="drag-cards" :move="limitLocalMove"
-                    @change="cardChange" ref="sixth">
-                    <template #item="{ element, index }">
-                        <Card :value="element.value" :isOpen="element.isOpen"
-                            @click="openCard(cardStacks.sixth, element)" />
-                    </template>
-                </draggable>
-            </div>
-            <div>
-                <draggable :list="cardStacks.seventh" group="pokers" itemKey="value" class="drag-cards"
-                    :move="limitLocalMove" @change="cardChange" ref="seventh">
-                    <template #item="{ element, index }">
-                        <Card :value="element.value" :isOpen="element.isOpen"
-                            @click="openCard(cardStacks.seventh, element)" />
-                    </template>
-                </draggable>
+                <div>
+                    <draggable :list="cardStacks.sixth" group="pokers" itemKey="value" class="drag-cards"
+                        :move="limitLocalMove" @change="cardChange" ref="sixth">
+                        <template #item="{ element, index }">
+                            <Card :value="element.value" :isOpen="element.isOpen"
+                                @click="openCard(cardStacks.sixth, element)" />
+                        </template>
+                    </draggable>
+                </div>
+                <div>
+                    <draggable :list="cardStacks.seventh" group="pokers" itemKey="value" class="drag-cards"
+                        :move="limitLocalMove" @change="cardChange" ref="seventh">
+                        <template #item="{ element, index }">
+                            <Card :value="element.value" :isOpen="element.isOpen"
+                                @click="openCard(cardStacks.seventh, element)" />
+                        </template>
+                    </draggable>
+                </div>
             </div>
         </GameBoard>
     </main>
