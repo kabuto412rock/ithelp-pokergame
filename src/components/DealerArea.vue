@@ -113,7 +113,7 @@ const deckState = computed(() => {
     }
 
     to {
-        transform: translateX(-100rem);
+        transform: translateX(-10rem);
     }
 }
 

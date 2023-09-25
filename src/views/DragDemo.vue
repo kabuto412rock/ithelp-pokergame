@@ -15,7 +15,6 @@ const fourth = ref(null);
 const fifth = ref(null);
 const sixth = ref(null);
 const seventh = ref(null);
-const delaerStacks = ref(null);
 const cardStacks = reactive({
     /** @type {Card[]} */ first: [],
     /** @type {Card[]} */ second: [],
@@ -27,7 +26,7 @@ const cardStacks = reactive({
     /** @type {Card[]} */ none: [],
     /** @type {Card[]} */ delaerStacks: [],
 });
-const validNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'delaerStacks'];
+const validNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh'];
 onMounted(() => {
     const data = geneateShuffleDeck(52); // 梅花A~黑桃K
     const everyIndex = [0, 1, 3, 6, 10, 15, 21, 28]// // 梅花A~紅心2
@@ -62,8 +61,6 @@ function getDomName(dom) {
         return 'sixth';
     } else if (dom == seventh.value.targetDomElement) {
         return 'seventh';
-    } else if (dom == delaerStacks.value.targetDomElement) {
-        return 'delaerStacks';
     } else {
         return 'none';
     }
@@ -103,7 +100,21 @@ function limitLocalMove(evt) {
     // 仍使用原生的拖曳效果
     return result;
 }
+/** 發牌區移動 */
+function dealerMove(evt) {
+    const to = getDomName(evt.to);
+    const dealerCard = evt.draggedContext.element;
 
+    // 檢查疊牌順序、花色是否正確
+    const result = checkNextOk(cardStacks[to], dealerCard);
+    if (result) {
+        changeOption.value = () => {
+            cardStacks.delaerStacks = cardStacks.delaerStacks.filter(card => card.value !== dealerCard.value);
+            changeOption.value = null;
+        };
+    }
+    return result;
+}
 function cardChange(event) {
     // 當卡片變動時，若有執行變動牌堆的陣列函數
     if (changeOption.value) {
@@ -128,7 +139,7 @@ function openCard(cards, element) {
     <main>
         <GameBoard style="display: flex;">
             <div>
-                <DealerArea :deck="cardStacks.delaerStacks" ref="delaerStacks" />
+                <DealerArea :deck="cardStacks.delaerStacks" :moveCard="dealerMove" />
             </div>
             <div style="display: grid;grid-template-columns: repeat(7, 1fr); overflow:fit-content;">
                 <div>
