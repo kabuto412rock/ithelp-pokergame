@@ -1,9 +1,12 @@
 <script setup>
-import { reactive } from 'vue';
+import { onMounted, ref } from 'vue';
 import GameBoard from '../components/GameBoard.vue';
 import { geneateDeck } from '../utils/poker-helper';
 import DealerArea from '../components/DealerArea.vue';
-const deck = reactive(geneateDeck(14, true));
+const deck = ref([]);
+onMounted(() => {
+    deck.value = geneateDeck(14, true);
+})
 </script>
 <template>
     <main>
