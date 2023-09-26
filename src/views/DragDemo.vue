@@ -104,9 +104,12 @@ function limitLocalMove(evt) {
 function dealerMove(evt) {
     const to = getDomName(evt.to);
     const dealerCard = evt.draggedContext.element;
+    const { futureIndex } = evt.draggedContext;
+    // 只能移動至目標牌堆的最後一張牌
+    let result = futureIndex == cardStacks[to].length;
 
     // 檢查疊牌順序、花色是否正確
-    const result = checkNextOk(cardStacks[to], dealerCard);
+    result = result && checkNextOk(cardStacks[to], dealerCard);
     if (result) {
         changeOption.value = () => {
             cardStacks.delaerStacks = cardStacks.delaerStacks.filter(card => card.value !== dealerCard.value);
@@ -119,10 +122,10 @@ function cardChange(event) {
     // 當卡片變動時，若有執行變動牌堆的陣列函數
     if (changeOption.value) {
         changeOption.value();
-        changeOption.value = null;
     } else {
         console.log(`no trigger changeOption`);
     };
+    changeOption.value = null;
 }
 /** 開牌函數 
  * @param {Card[]} cards 
@@ -140,6 +143,8 @@ function openCard(cards, element) {
         <GameBoard style="display: flex;">
             <div>
                 <DealerArea :deck="cardStacks.delaerStacks" :moveCard="dealerMove" />
+            </div>
+            <div>
             </div>
             <div style="display: grid;grid-template-columns: repeat(7, 1fr); overflow:fit-content;">
                 <div>
