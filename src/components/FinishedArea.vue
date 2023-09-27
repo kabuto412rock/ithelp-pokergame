@@ -1,47 +1,83 @@
 <script setup>
 import draggable from 'vuedraggable'
-import { onMounted, reactive } from "vue";
-import { geneateDeck } from '../utils/poker-helper';
+import { onMounted, ref, watch } from "vue";
 import Card from './Card.vue';
-const fourCards = reactive({
+const props = defineProps({
+    fourCards: {
+        type: Object,
+        required: true,
+        validator: (value) => {
+            return (
+                value.hasOwnProperty('club') &&
+                value.hasOwnProperty('diamond') &&
+                value.hasOwnProperty('heart') &&
+                value.hasOwnProperty('spade')
+            );
+        },
+    },
+    moveCard: {
+        type: Function,
+        default: () => { return false; }
+    },
+    change: {
+        type: Function,
+        default: () => { return false; }
+    }
+})
+const fourCards = ref({
     club: [],
     diamond: [],
     heart: [],
     spade: [],
 });
+watch(props.fourCards, (newVal) => {
+    fourCards.value = newVal;
+});
+
+const club = ref(null);
+const diamond = ref(null);
+const heart = ref(null);
+const spade = ref(null);
+const emit = defineEmits(['doms'])
+
 onMounted(() => {
-    const cards = geneateDeck(52, true);
-    fourCards.club = cards.slice(0, 1);
-    fourCards.diamond = cards.slice(13, 14);
-    fourCards.heart = cards.slice(26, 27);
-    fourCards.spade = cards.slice(39, 40);
+    emit('doms', {
+        club: club.value.targetDomElement,
+        diamond: diamond.value.targetDomElement,
+        heart: heart.value.targetDomElement,
+        spade: spade.value.targetDomElement,
+    })
 })
 </script>
 <template>
     <div style="display: flex;">
         <div class="card club">
-            <draggable :list="fourCards.club" group="pokers" itemKey="value" class="drag-cards">
+            <draggable :list="fourCards.club" group="pokers" itemKey="value" class="drag-cards" ref="club" :move="moveCard"
+                @change="change">
                 <template #item="{ element, index }">
                     <Card :value="element.value" :isOpen="element.isOpen" />
                 </template>
             </draggable>
         </div>
         <div class="card diamond">
-            <draggable :list="fourCards.diamond" group="pokers" itemKey="value" class="drag-cards">
+            <draggable :list="fourCards.diamond" group="pokers" itemKey="value" class="drag-cards" ref="diamond"
+                :move="moveCard" @change="change">
                 <template #item="{ element, index }">
                     <Card :value="element.value" :isOpen="element.isOpen" />
                 </template>
             </draggable>
         </div>
         <div class="card heart">
-            <draggable :list="fourCards.heart" group="pokers" itemKey="value" class="drag-cards">
+            <draggable :list="fourCards.heart" group="pokers" itemKey="value" class="drag-cards" ref="heart"
+                :move="moveCard" @change="change">
                 <template #item="{ element, index }">
                     <Card :value="element.value" :isOpen="element.isOpen" />
                 </template>
             </draggable>
         </div>
         <div class="card spade">
-            <draggable :list="fourCards.spade" group="pokers" itemKey="value" class="drag-cards">
+            <draggable :list="fourCards.spade" group="pokers" itemKey="value" class="drag-cards" ref="spade"
+                :move="moveCard" @change="change">
                 <template #item="{ element, index }">
                     <Card :value="element.value" :isOpen="element.isOpen" />
                 </template>
