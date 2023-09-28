@@ -1,6 +1,7 @@
 /**
  * @typedef {import('../../@types/index').Card} Card
  */
+import { FOUR_SUITS } from "./constants";
 /**
  * 洗撲克牌
  * @param {Card[]} deck 
@@ -72,10 +73,34 @@ function checkNextOk(targetDeck, card) {
     // 檢查數字是否連續
     return (lastCard.value % 13 - 1) == (card.value % 13)
 }
+/** 檢查下一張牌是否可以放上去`集牌堆`
+ * @param {String} pokerColor 牌堆花色
+ * @param {Object} fourCards 四種結算牌堆
+ * @param {Card} card 要放上去的牌
+ * 
+ * @returns {Boolean} 是否可以放上去
+ */
+function checkNextOk2(pokerColor, fourCards, card) {
+    const pokerColorIndex = Math.floor(card.value / 13);
+    const pokerNumber = card.value % 13;
+    const pokerColorName = FOUR_SUITS[pokerColorIndex];
+
+    if (pokerColorName !== pokerColor) {
+        return false;
+    }
+    const deckCards = fourCards[pokerColor];
+    if (deckCards.length === 0 && pokerNumber !== 0) {
+        return false;
+    }
+
+    const lastCardNumber = deckCards[deckCards.length - 1].value % 13;
+    return lastCardNumber + 1 === pokerNumber;
+}
 
 export {
     geneateShuffleDeck,
     geneateDeck,
     getPosition,
-    checkNextOk
+    checkNextOk,
+    checkNextOk2
 }

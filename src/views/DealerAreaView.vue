@@ -4,10 +4,10 @@
  */
 import { onMounted, ref, reactive } from 'vue';
 import GameBoard from '../components/GameBoard.vue';
-import { geneateDeck } from '../utils/poker-helper';
+import { geneateDeck, checkNextOk2 } from '../utils/poker-helper';
+import { FOUR_SUITS } from '../utils/constants';
 import DealerArea from '../components/DealerArea.vue';
 import FinishedArea from '../components/FinishedArea.vue';
-const FOUR_SUITS = Object.freeze(['club', 'diamond', 'heart', 'spade']);
 const deck = ref([]);
 const fourCards = reactive({
     club: [],
@@ -41,7 +41,6 @@ function setFourCardDoms(cardDomMaps) {
 }
 /** 將發牌區的牌拖曳至 結算牌堆 中 */
 function moveInFourCards(evt) {
-    console.log(evt);
     const { element, index } = evt.draggedContext;
 
     // 檢查是否拖曳至 結算牌堆
@@ -53,7 +52,7 @@ function moveInFourCards(evt) {
         }
     });
     let result = deckColor != null;
-    result = result && checkNextOk2(deckColor, element);
+    result = result && checkNextOk2(deckColor, fourCards, element);
     if (result) {
         const fromCards = deck.value.filter((card) => card.value != element.value)
         const toCards = [...fourCards[deckColor], element];
@@ -64,28 +63,6 @@ function moveInFourCards(evt) {
         };
     }
     return result;
-}
-/** 檢查下一張牌是否可以放上去`集牌堆`
- * @param {String} pokerColor 牌堆花色
- * @param {Card} card 要放上去的牌
- * 
- * @returns {Boolean} 是否可以放上去
- */
-function checkNextOk2(pokerColor, card) {
-    const pokerColorIndex = Math.floor(card.value / 13);
-    const pokerNumber = card.value % 13;
-    const pokerColorName = FOUR_SUITS[pokerColorIndex];
-
-    if (pokerColorName !== pokerColor) {
-        return false;
-    }
-    const deckCards = fourCards[pokerColor];
-    if (deckCards.length === 0 && pokerNumber !== 0) {
-        return false;
-    }
-
-    const lastCardNumber = deckCards[deckCards.length - 1].value % 13;
-    return lastCardNumber + 1 === pokerNumber;
 }
 function cardChange(event) {
     // 當卡片變動時，若有執行變動牌堆的陣列函數

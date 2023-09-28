@@ -4,10 +4,12 @@
  */
 import { onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
-import { geneateShuffleDeck, checkNextOk, geneateDeck } from "../utils/poker-helper";
+import { FOUR_SUITS } from '../utils/constants';
+import { geneateShuffleDeck, checkNextOk, checkNextOk2 } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
 import Card from '../components/Card.vue';
 import DealerArea from '../components/DealerArea.vue';
+import FinishedArea from '../components/FinishedArea.vue';
 const first = ref(null);
 const second = ref(null);
 const third = ref(null);
@@ -26,6 +28,19 @@ const cardStacks = reactive({
     /** @type {Card[]} */ none: [],
     /** @type {Card[]} */ delaerStacks: [],
 });
+const fourCards = reactive({
+    club: [],
+    diamond: [],
+    heart: [],
+    spade: []
+});
+const fourCardsDom = reactive({
+    club: null,
+    diamond: null,
+    heart: null,
+    spade: null,
+});
+
 const validNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh'];
 onMounted(() => {
     const data = geneateShuffleDeck(52); // 梅花A~黑桃K
@@ -46,6 +61,12 @@ watch(cardStacks, (stacks) => {
     });
 });
 const changeOption = ref(null);
+function setFourCardDoms(cardDomMaps) {
+    FOUR_SUITS.forEach(name => {
+        const domElement = cardDomMaps[name];
+        fourCardsDom[name] = domElement;
+    });
+}
 function getDomName(dom) {
     if (dom == first.value.targetDomElement) {
         return 'first';
@@ -142,9 +163,10 @@ function openCard(cards, element) {
     <main>
         <GameBoard style="display: flex;">
             <div>
+                <div class="text">發牌區</div>
                 <DealerArea :deck="cardStacks.delaerStacks" :moveCard="dealerMove" />
-            </div>
-            <div>
+                <div class="text">結算牌堆</div>
+                <FinishedArea :fourCards="fourCards" @doms="setFourCardDoms" :change="cardChange" />
             </div>
             <div style="display: grid;grid-template-columns: repeat(7, 1fr); overflow:fit-content;">
                 <div>
@@ -238,5 +260,9 @@ function openCard(cards, element) {
     border: 1px solid black;
     min-height: 2px;
     padding: 1px;
+}
+
+.text {
+    color: white;
 }
 </style>
