@@ -89,8 +89,8 @@ function checkNextOk2(pokerColor, fourCards, card) {
         return false;
     }
     const deckCards = fourCards[pokerColor];
-    if (deckCards.length === 0 && pokerNumber !== 0) {
-        return false;
+    if (deckCards.length === 0) {
+        return pokerNumber === 0;
     }
 
     const lastCardNumber = deckCards[deckCards.length - 1].value % 13;

@@ -98,16 +98,19 @@ function limitLocalMove(evt) {
     // 取得牌堆的來源、目標名稱，對應reactive`cardStacks`內的名稱
     const from = getDomName(evt.from);
     const to = getDomName(evt.to);
-    const { index, futureIndex } = evt.draggedContext;
-    console.log(`from: ${from}, to: ${to}, index: ${index}, futureIndex: ${futureIndex}`);
-    // 只能移動至目標牌堆的最後一張牌
-    result = result && futureIndex == cardStacks[to].length;
+    const { index, futureIndex, element } = evt.draggedContext;
 
     // 移動的牌必須是開著的
     result = result && cardStacks[from][index].isOpen;
 
-    // 檢查疊牌順序、花色是否正確
-    result = result && checkNextOk(cardStacks[to], cardStacks[from][index]);
+    if (FOUR_SUITS.includes(to)) {
+        result = result && checkNextOk2(to, cardStacks, element);
+    } else {
+        // 只能移動至目標牌堆的最後一張牌
+        result = result && futureIndex == cardStacks[to].length;
+        // 檢查疊牌順序、花色是否正確
+        result = result && checkNextOk(cardStacks[to], element);
+    }
 
     if (result) {
         // 多筆拖曳後，來源牌堆、目的牌堆的陣列變動後的結果
@@ -117,6 +120,7 @@ function limitLocalMove(evt) {
             ...cardStacks[from].slice(index),
             ...cardStacks[to].slice(futureIndex)
         ];
+
         changeOption.value = () => {
             cardStacks[from] = newFromCards;
             cardStacks[to] = newToCards;
@@ -131,12 +135,17 @@ function dealerMove(evt) {
     const to = getDomName(evt.to);
     const dealerCard = evt.draggedContext.element;
     const { futureIndex } = evt.draggedContext;
-    // 只能移動至目標牌堆的最後一張牌
-    let result = futureIndex == cardStacks[to].length;
-    console.log(`from: 發牌區,  to: ${to}, futureIndex: ${futureIndex}`);
+    let result = true;
 
-    // 檢查疊牌順序、花色是否正確
-    result = result && checkNextOk(cardStacks[to], dealerCard);
+    // 如果目標是結算盤堆，則套用結算盤堆的規則
+    if (FOUR_SUITS.includes(to)) {
+        result = result && checkNextOk2(to, cardStacks, dealerCard);
+    } else {
+        // 只能移動至目標牌堆的最後一張牌
+        result = result && futureIndex == cardStacks[to].length;
+        // 檢查疊牌順序、花色是否正確
+        result = result && checkNextOk(cardStacks[to], dealerCard);
+    }
     if (result) {
         changeOption.value = () => {
             cardStacks.delaerStacks = cardStacks.delaerStacks.filter(card => card.value !== dealerCard.value);
