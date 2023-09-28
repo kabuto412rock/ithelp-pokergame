@@ -27,12 +27,10 @@ const cardStacks = reactive({
     /** @type {Card[]} */ seventh: [],
     /** @type {Card[]} */ none: [],
     /** @type {Card[]} */ delaerStacks: [],
-});
-const fourCards = reactive({
-    club: [],
-    diamond: [],
-    heart: [],
-    spade: []
+     /** @type {Card[]} */ club: [],
+     /** @type {Card[]} */ diamond: [],
+     /** @type {Card[]} */ heart: [],
+     /** @type {Card[]} */ spade: []
 });
 const fourCardsDom = reactive({
     club: null,
@@ -83,9 +81,16 @@ function getDomName(dom) {
     } else if (dom == seventh.value.targetDomElement) {
         return 'seventh';
     } else {
+        for (let i = 0; i < FOUR_SUITS.length; i++) {
+            const name = FOUR_SUITS[i];
+            if (dom == fourCardsDom[name]) {
+                return name;
+            }
+        }
         return 'none';
     }
 }
+
 function limitLocalMove(evt) {
     // 限制同個牌堆無法拖曳
     let result = evt.from !== evt.to;
@@ -94,7 +99,7 @@ function limitLocalMove(evt) {
     const from = getDomName(evt.from);
     const to = getDomName(evt.to);
     const { index, futureIndex } = evt.draggedContext;
-
+    console.log(`from: ${from}, to: ${to}, index: ${index}, futureIndex: ${futureIndex}`);
     // 只能移動至目標牌堆的最後一張牌
     result = result && futureIndex == cardStacks[to].length;
 
@@ -128,6 +133,7 @@ function dealerMove(evt) {
     const { futureIndex } = evt.draggedContext;
     // 只能移動至目標牌堆的最後一張牌
     let result = futureIndex == cardStacks[to].length;
+    console.log(`from: 發牌區,  to: ${to}, futureIndex: ${futureIndex}`);
 
     // 檢查疊牌順序、花色是否正確
     result = result && checkNextOk(cardStacks[to], dealerCard);
@@ -166,7 +172,7 @@ function openCard(cards, element) {
                 <div class="text">發牌區</div>
                 <DealerArea :deck="cardStacks.delaerStacks" :moveCard="dealerMove" />
                 <div class="text">結算牌堆</div>
-                <FinishedArea :fourCards="fourCards" @doms="setFourCardDoms" :change="cardChange" />
+                <FinishedArea :fourCards="cardStacks" @doms="setFourCardDoms" :change="cardChange" />
             </div>
             <div style="display: grid;grid-template-columns: repeat(7, 1fr); overflow:fit-content;">
                 <div>
