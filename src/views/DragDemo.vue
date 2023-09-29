@@ -90,7 +90,7 @@ function getDomName(dom) {
         return 'none';
     }
 }
-
+/** 7牌堆移動 */
 function limitLocalMove(evt) {
     // 限制同個牌堆無法拖曳
     let result = evt.from !== evt.to;
@@ -154,6 +154,21 @@ function dealerMove(evt) {
     }
     return result;
 }
+/** 結算牌堆移動 */
+function finishedCardMove(evt) {
+    const to = getDomName(evt.to);
+
+    let result = validNames.includes(to);
+    console.log(`結算牌堆移動to: ${to}, result: ${result}`);
+    const { futureIndex, element } = evt.draggedContext;
+    // 只能移動至目標牌堆的最後一張牌
+    result = result && futureIndex == cardStacks[to].length;
+
+    // 檢查疊牌順序、花色是否正確
+    result = result && checkNextOk(cardStacks[to], element);
+
+    return result;
+}
 function cardChange(event) {
     // 當卡片變動時，若有執行變動牌堆的陣列函數
     if (changeOption.value) {
@@ -181,7 +196,8 @@ function openCard(cards, element) {
                 <div class="text">發牌區</div>
                 <DealerArea :deck="cardStacks.delaerStacks" :moveCard="dealerMove" />
                 <div class="text">結算牌堆</div>
-                <FinishedArea :fourCards="cardStacks" @doms="setFourCardDoms" :change="cardChange" />
+                <FinishedArea :fourCards="cardStacks" :moveCard="finishedCardMove" @doms="setFourCardDoms"
+                    :change="cardChange" />
             </div>
             <div style="display: grid;grid-template-columns: repeat(7, 1fr); overflow:fit-content;">
                 <div>
