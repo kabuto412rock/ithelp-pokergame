@@ -1,9 +1,13 @@
 <script setup>
 import draggable from 'vuedraggable'
-import { computed, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import Card from '../components/Card.vue';
 const props = defineProps(
     {
+        dealer: {
+            type: Object,
+            default: reactive({ index: 0 })
+        },
         deck: {
             type: Array,
             default: () => []
@@ -17,7 +21,14 @@ const props = defineProps(
 const index = ref(0);
 const deck = ref([]);
 watch(() => props.deck, (newVal) => {
+    console.log(`props.deck`);
+    console.log(newVal);
     deck.value = newVal;
+});
+watch(() => props.dealer, (newDealer) => {
+    console.log(`props.dealer`);
+    console.log(newDealer);
+    index.value = newDealer.index;
 });
 function clickCard() {
     index.value++;

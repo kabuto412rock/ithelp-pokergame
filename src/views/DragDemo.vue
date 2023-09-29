@@ -30,7 +30,7 @@ const cardStacks = reactive({
      /** @type {Card[]} */ club: [],
      /** @type {Card[]} */ diamond: [],
      /** @type {Card[]} */ heart: [],
-     /** @type {Card[]} */ spade: []
+     /** @type {Card[]} */ spade: [],
 });
 const fourCardsDom = reactive({
     club: null,
@@ -38,15 +38,11 @@ const fourCardsDom = reactive({
     heart: null,
     spade: null,
 });
-
+let dealer = reactive({ index: 0 });
 const validNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh'];
+
 onMounted(() => {
-    const data = geneateShuffleDeck(52); // 梅花A~黑桃K
-    const everyIndex = [0, 1, 3, 6, 10, 15, 21, 28]// // 梅花A~紅心2
-    validNames.forEach((name, idx) => {
-        cardStacks[name] = data.slice(everyIndex[idx], everyIndex[idx + 1]);
-    });
-    cardStacks.delaerStacks = data.slice(28).map(card => ({ ...card, isOpen: true }));
+    resetGame();
 });
 
 watch(cardStacks, (stacks) => {
@@ -59,6 +55,21 @@ watch(cardStacks, (stacks) => {
     });
 });
 const changeOption = ref(null);
+
+function resetGame() {
+    const data = geneateShuffleDeck(52); // 洗亂的52張牌
+    const everyIndex = [0, 1, 3, 6, 10, 15, 21, 28]// 7牌堆每個牌堆的起始index
+    validNames.forEach((name, idx) => {
+        cardStacks[name] = data.slice(everyIndex[idx], everyIndex[idx + 1]);
+    });
+    // 發牌區
+    cardStacks.delaerStacks = data.slice(28).map(card => ({ ...card, isOpen: true }));
+    // 結算牌堆區
+    FOUR_SUITS.forEach(name => {
+        cardStacks[name] = [];
+    });
+    dealer = { index: 0 };
+}
 function setFourCardDoms(cardDomMaps) {
     FOUR_SUITS.forEach(name => {
         const domElement = cardDomMaps[name];
@@ -194,10 +205,11 @@ function openCard(cards, element) {
         <GameBoard style="display: flex;">
             <div>
                 <div class="text">發牌區</div>
-                <DealerArea :deck="cardStacks.delaerStacks" :moveCard="dealerMove" />
+                <DealerArea :dealer="dealer" :deck="cardStacks.delaerStacks" :moveCard="dealerMove" />
                 <div class="text">結算牌堆</div>
                 <FinishedArea :fourCards="cardStacks" :moveCard="finishedCardMove" @doms="setFourCardDoms"
                     :change="cardChange" />
+                <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
             </div>
             <div style="display: grid;grid-template-columns: repeat(7, 1fr); overflow:fit-content;">
                 <div>
