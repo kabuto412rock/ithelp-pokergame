@@ -69,8 +69,6 @@ function resetGame() {
         let cards = data.slice(everyIndex[idx], everyIndex[idx + 1]);
         cards[cards.length - 1].isOpen = true;
         cardStacks[name] = cards;
-        gameScore.value = 0;
-        gameTime.value = 0;
     });
     // 發牌區
     cardStacks.delaerStacks = data.slice(28).map(card => ({ ...card, isOpen: true }));
@@ -79,6 +77,11 @@ function resetGame() {
         cardStacks[name] = [];
     });
     dealer = { index: 0 };
+    // 初始化遊戲分數、時間
+    gameScore.value = 0;
+    gameTime.value = 0;
+    clearInterval(gameTimer.value);
+    gameTimer.value = null;
 }
 function setFourCardDoms(cardDomMaps) {
     FOUR_SUITS.forEach(name => {
@@ -221,6 +224,14 @@ function openCard(cards, element) {
         element.isOpen = true;
     }
 }
+/** 開始計時 */
+function startTimer() {
+    if (!gameTimer.value) {
+        gameTimer.value = setInterval(() => {
+            gameTime.value++;
+        }, 1000);
+    }
+}
 </script>
 <template>
     <main>
@@ -234,7 +245,7 @@ function openCard(cards, element) {
             </div>
             <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
         </div>
-        <GameBoard style="display: flex;">
+        <GameBoard style="display: flex;" @click="startTimer">
             <div>
                 <div class="text">發牌區</div>
                 <DealerArea :dealer="dealer" :deck="cardStacks.delaerStacks" :moveCard="dealerMove" />
