@@ -129,6 +129,8 @@ function limitLocalMove(evt) {
 
     const isToFinishedArea = FOUR_SUITS.includes(to);
     if (isToFinishedArea) {
+        // 只能移動單張牌至結算牌堆
+        result = result && cardStacks[from].length - 1 == index;
         result = result && checkNextOk2(to, cardStacks, element);
     } else {
         // 只能移動至目標牌堆的最後一張牌
