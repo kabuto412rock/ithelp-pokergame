@@ -148,7 +148,7 @@ function limitLocalMove(evt) {
 
         changeOption.value = () => {
             cardStacks[from] = newFromCards;
-            cardStacks[to] = newToCards;
+            cardStacks[to] = isToFinishedArea ? newToCards.sort((a, b) => a.value - b.value) : newToCards;
             if (isToFinishedArea) {
                 gameScore.value += 15;
             }
@@ -167,11 +167,13 @@ function dealerMove(evt) {
 
     // 如果目標是結算盤堆，則套用結算盤堆的規則
     const isToFinishedArea = FOUR_SUITS.includes(to);
+
+    // 只能移動至目標牌堆的最後一張牌
+    result = result && futureIndex == cardStacks[to].length;
+
     if (isToFinishedArea) {
         result = result && checkNextOk2(to, cardStacks, dealerCard);
     } else {
-        // 只能移動至目標牌堆的最後一張牌
-        result = result && futureIndex == cardStacks[to].length;
         // 檢查疊牌順序、花色是否正確
         result = result && checkNextOk(cardStacks[to], dealerCard);
     }
