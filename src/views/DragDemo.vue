@@ -40,11 +40,9 @@ const fourCardsDom = reactive({
 });
 let dealer = reactive({ index: 0 });
 const validNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh'];
-let gameState = reactive({
-    score: 0,
-    time: 0,
-    timer: null,
-});
+let gameScore = ref(0);
+const gameTime = ref(0);
+const gameTimer = ref(null);
 
 onMounted(() => {
     resetGame();
@@ -66,11 +64,8 @@ function resetGame() {
     const everyIndex = [0, 1, 3, 6, 10, 15, 21, 28]// 7牌堆每個牌堆的起始index
     validNames.forEach((name, idx) => {
         cardStacks[name] = data.slice(everyIndex[idx], everyIndex[idx + 1]);
-        gameState = {
-            score: 0,
-            time: 0,
-            timer: null,
-        };
+        gameScore.value = 0;
+        gameTime.value = 0;
     });
     // 發牌區
     cardStacks.delaerStacks = data.slice(28).map(card => ({ ...card, isOpen: true }));
@@ -170,6 +165,7 @@ function dealerMove(evt) {
     if (result) {
         changeOption.value = () => {
             cardStacks.delaerStacks = cardStacks.delaerStacks.filter(card => card.value !== dealerCard.value);
+            gameScore.value += 10;
             changeOption.value = null;
         };
     }
@@ -215,10 +211,10 @@ function openCard(cards, element) {
         <div
             style=" display: flex; flex-wrap: wrap; flex-direction: row;justify-content: space-around; align-items: center;  background-color: antiquewhite; font-size: large;">
             <div>
-                累計分數: {{ gameState.score }}
+                累計分數: {{ gameScore }}
             </div>
             <div>
-                經過時間: {{ gameState.time }} 秒
+                經過時間: {{ gameTime }} 秒
             </div>
             <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
         </div>

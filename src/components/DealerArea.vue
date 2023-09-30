@@ -21,13 +21,9 @@ const props = defineProps(
 const index = ref(0);
 const deck = ref([]);
 watch(() => props.deck, (newVal) => {
-    console.log(`props.deck`);
-    console.log(newVal);
     deck.value = newVal;
 });
 watch(() => props.dealer, (newDealer) => {
-    console.log(`props.dealer`);
-    console.log(newDealer);
     index.value = newDealer.index;
 });
 function clickCard() {
