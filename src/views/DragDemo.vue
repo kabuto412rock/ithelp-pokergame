@@ -53,7 +53,6 @@ watch(cardStacks, (stacks) => {
     validNames.forEach(cardName => {
         if (stacks[cardName].length > 0) {
             const lastCard = stacks[cardName][stacks[cardName].length - 1];
-
             if (!lastCard.isOpen) {
                 lastCard.isOpen = true;
                 gameScore.value += 5;
@@ -125,7 +124,8 @@ function limitLocalMove(evt) {
     // 移動的牌必須是開著的
     result = result && cardStacks[from][index].isOpen;
 
-    if (FOUR_SUITS.includes(to)) {
+    const isToFinishedArea = FOUR_SUITS.includes(to);
+    if (isToFinishedArea) {
         result = result && checkNextOk2(to, cardStacks, element);
     } else {
         // 只能移動至目標牌堆的最後一張牌
@@ -146,6 +146,9 @@ function limitLocalMove(evt) {
         changeOption.value = () => {
             cardStacks[from] = newFromCards;
             cardStacks[to] = newToCards;
+            if (isToFinishedArea) {
+                gameScore.value += 15;
+            }
             changeOption.value = null;
         };
     }
@@ -160,7 +163,8 @@ function dealerMove(evt) {
     let result = true;
 
     // 如果目標是結算盤堆，則套用結算盤堆的規則
-    if (FOUR_SUITS.includes(to)) {
+    const isToFinishedArea = FOUR_SUITS.includes(to);
+    if (isToFinishedArea) {
         result = result && checkNextOk2(to, cardStacks, dealerCard);
     } else {
         // 只能移動至目標牌堆的最後一張牌
@@ -171,7 +175,7 @@ function dealerMove(evt) {
     if (result) {
         changeOption.value = () => {
             cardStacks.delaerStacks = cardStacks.delaerStacks.filter(card => card.value !== dealerCard.value);
-            gameScore.value += 10;
+            gameScore.value += 10 + (isToFinishedArea ? 15 : 0);
             changeOption.value = null;
         };
     }
@@ -190,6 +194,12 @@ function finishedCardMove(evt) {
     // 檢查疊牌順序、花色是否正確
     result = result && checkNextOk(cardStacks[to], element);
 
+    if (result) {
+        changeOption.value = () => {
+            gameScore.value -= 15;
+            changeOption.value = null;
+        };
+    }
     return result;
 }
 function cardChange(event) {
