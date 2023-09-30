@@ -40,6 +40,11 @@ const fourCardsDom = reactive({
 });
 let dealer = reactive({ index: 0 });
 const validNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh'];
+let gameState = reactive({
+    score: 0,
+    time: 0,
+    timer: null,
+});
 
 onMounted(() => {
     resetGame();
@@ -61,6 +66,11 @@ function resetGame() {
     const everyIndex = [0, 1, 3, 6, 10, 15, 21, 28]// 7牌堆每個牌堆的起始index
     validNames.forEach((name, idx) => {
         cardStacks[name] = data.slice(everyIndex[idx], everyIndex[idx + 1]);
+        gameState = {
+            score: 0,
+            time: 0,
+            timer: null,
+        };
     });
     // 發牌區
     cardStacks.delaerStacks = data.slice(28).map(card => ({ ...card, isOpen: true }));
@@ -202,6 +212,16 @@ function openCard(cards, element) {
 </script>
 <template>
     <main>
+        <div
+            style=" display: flex; flex-wrap: wrap; flex-direction: row;justify-content: space-around; align-items: center;  background-color: antiquewhite; font-size: large;">
+            <div>
+                累計分數: {{ gameState.score }}
+            </div>
+            <div>
+                經過時間: {{ gameState.time }} 秒
+            </div>
+            <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
+        </div>
         <GameBoard style="display: flex;">
             <div>
                 <div class="text">發牌區</div>
@@ -209,7 +229,6 @@ function openCard(cards, element) {
                 <div class="text">結算牌堆</div>
                 <FinishedArea :fourCards="cardStacks" :moveCard="finishedCardMove" @doms="setFourCardDoms"
                     :change="cardChange" />
-                <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
             </div>
             <div style="display: grid;grid-template-columns: repeat(7, 1fr); overflow:fit-content;">
                 <div>
@@ -278,6 +297,7 @@ function openCard(cards, element) {
                 </div>
             </div>
         </GameBoard>
+
     </main>
 </template>
 <style scoped>
@@ -298,7 +318,7 @@ function openCard(cards, element) {
 
 .drag-cards {
     display: grid;
-    grid-template-rows: repeat(13, 3rem);
+    grid-template-rows: repeat(13, 2.5rem);
     background-color: yellow;
     border: 1px solid black;
     min-height: 2px;
