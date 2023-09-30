@@ -53,7 +53,11 @@ watch(cardStacks, (stacks) => {
     validNames.forEach(cardName => {
         if (stacks[cardName].length > 0) {
             const lastCard = stacks[cardName][stacks[cardName].length - 1];
-            lastCard.isOpen = true;
+
+            if (!lastCard.isOpen) {
+                lastCard.isOpen = true;
+                gameScore.value += 5;
+            }
         }
     });
 });
@@ -63,7 +67,9 @@ function resetGame() {
     const data = geneateShuffleDeck(52); // 洗亂的52張牌
     const everyIndex = [0, 1, 3, 6, 10, 15, 21, 28]// 7牌堆每個牌堆的起始index
     validNames.forEach((name, idx) => {
-        cardStacks[name] = data.slice(everyIndex[idx], everyIndex[idx + 1]);
+        let cards = data.slice(everyIndex[idx], everyIndex[idx + 1]);
+        cards[cards.length - 1].isOpen = true;
+        cardStacks[name] = cards;
         gameScore.value = 0;
         gameTime.value = 0;
     });
