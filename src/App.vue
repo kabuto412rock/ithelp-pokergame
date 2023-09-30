@@ -6,7 +6,7 @@ import { RouterView, RouterLink } from 'vue-router';
     <nav class="navbar">
       <RouterLink to="/" class="nav-link">Home</RouterLink>
       <RouterLink to="/game1" class="nav-link">撲克牌連連看</RouterLink>
-      <RouterLink to="/drag-demo" class="nav-link">拖曳練習</RouterLink>
+      <RouterLink to="/drag-demo" class="nav-link">紙牌接龍</RouterLink>
       <RouterLink to="/dealer-area" class="nav-link">發牌區練習</RouterLink>
 
     </nav>
