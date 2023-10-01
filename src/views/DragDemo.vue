@@ -4,8 +4,8 @@
  */
 import { onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
-import { FOUR_SUITS, SEVEN_STACKS } from '../utils/constants';
-import { geneateShuffleDeck, checkNextOk, checkNextOk2, findTailCards } from "../utils/poker-helper";
+import { FOUR_SUITS, SEVEN_STACKS, PokerValuesMap } from '../utils/constants';
+import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
 import Card from '../components/Card.vue';
 import DealerArea from '../components/DealerArea.vue';
@@ -235,6 +235,18 @@ function startTimer() {
         }, 1000);
     }
 }
+/** 顯示移牌提示 */
+function showHint() {
+    const info = getMoveHint(cardStacks, dealer.index);
+    if (info) {
+        const { card, fromIndex, fromName, toName } = info;
+        const fromDom = getDomName(fromName);
+        const toDom = getDomName(toName);
+
+        console.log(`來源: ${fromName}, 目標: ${toName},card.value:${card.value}, 牌: ${PokerValuesMap[card.value].content}`);
+    }
+}
+
 </script>
 <template>
     <main>
@@ -246,13 +258,16 @@ function startTimer() {
             <div>
                 經過時間: {{ gameTime }} 秒
             </div>
-            <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
-            <button @click="() => console.log(findTailCards(cardStacks))">提示</button>
+            <span>
+                <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
+                <button style="font-size: 1.5rem;" @click="showHint">提示</button>
+            </span>
         </div>
         <GameBoard style="display: flex;" @click="startTimer">
             <div>
                 <div class="text">發牌區</div>
-                <DealerArea :dealer="dealer" :deck="cardStacks.delaerStacks" :moveCard="dealerMove" />
+                <DealerArea :dealer="dealer" :deck="cardStacks.delaerStacks" :moveCard="dealerMove"
+                    @idx="v => { dealer.index = v; }" />
                 <div class="text">結算牌堆</div>
                 <FinishedArea :fourCards="cardStacks" :moveCard="finishedCardMove" @doms="setFourCardDoms"
                     :change="cardChange" />

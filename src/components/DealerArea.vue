@@ -2,6 +2,7 @@
 import draggable from 'vuedraggable'
 import { computed, reactive, ref, watch } from 'vue';
 import Card from '../components/Card.vue';
+const emit = defineEmits(['idx']);
 const props = defineProps(
     {
         dealer: {
@@ -31,6 +32,7 @@ function clickCard() {
     if (index.value > deck.value.length) {
         index.value = 0;
     }
+    emit('idx', index.value);
 }
 /** 玩家可拿取的牌 */
 const canTakeCards = computed(() => {

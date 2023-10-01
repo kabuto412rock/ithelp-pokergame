@@ -1,6 +1,7 @@
 /**
  * @typedef {import('../../@types/index').Card} Card
  * @typedef {import('../../@types/index').CardStacks} CardStacks
+ * @typedef {import('../../@types/index').MoveHint } MoveHint
  */
 import { FOUR_SUITS, SEVEN_STACKS } from "./constants";
 /**
@@ -149,11 +150,72 @@ function findTailCards(cardstacks) {
     });
     return result;
 }
+
+
+/** 取得一個移動提示
+ * @param {CardStacks} cardStacks 
+ * @param {number} dealerIndex 
+ * @returns {MoveHint | null} 移動提示
+ */
+function getMoveHint(cardStacks, dealerIndex) {
+    const tailValuesMap = findTailCards(cardStacks);
+    let hintAnswer = null;
+    // 發牌區
+    let startIndex = dealerIndex < 3 ? 0 : dealerIndex - 3;
+    const dealerCards = cardStacks['delaerStacks'].slice(startIndex, dealerIndex);
+    dealerCards.forEach((card) => {
+        if (tailValuesMap.has(card.value)) {
+            hintAnswer = {
+                fromName: 'delaerStacks',
+                card: card,
+                fromIndex: cardStacks['delaerStacks'].findIndex((c) => c.value === card.value),
+                toName: tailValuesMap.get(card.value),
+            };
+        }
+    });
+    if (hintAnswer != null) return hintAnswer;
+    // 7個牌堆
+    SEVEN_STACKS.forEach((name) => {
+        let len = cardStacks[name].length;
+        for (let i = 0; i < len; i++) {
+            let card = cardStacks[name][i];
+            // 由上往下找，遇到未開牌就跳過
+            if (!card.isOpen) continue;
+            if (tailValuesMap.has(card.value)) {
+                hintAnswer = {
+                    fromName: name,
+                    card: card,
+                    fromIndex: i,
+                    toName: tailValuesMap.get(card.value),
+                };
+                break;
+            }
+        }
+    });
+    if (hintAnswer != null) return hintAnswer;
+
+    // 結算牌堆
+    FOUR_SUITS.forEach((name) => {
+        let len = cardStacks[name].length;
+        if (len == 0) return;
+        let card = cardStacks[name][len - 1];
+        if (tailValuesMap.has(card.value)) {
+            hintAnswer = {
+                fromName: name,
+                card: card,
+                fromIndex: len - 1,
+                toName: tailValuesMap.get(card.value),
+            };
+        }
+    });
+
+    return hintAnswer;
+}
 export {
     geneateShuffleDeck,
     geneateDeck,
     getPosition,
     checkNextOk,
     checkNextOk2,
-    findTailCards
+    getMoveHint
 }
