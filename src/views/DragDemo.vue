@@ -236,15 +236,45 @@ function startTimer() {
     }
 }
 /** 顯示移牌提示 */
-function showHint() {
+function showHint(e) {
+    const btnElement = e.target;
     const info = getMoveHint(cardStacks, dealer.index);
     if (info) {
-        const { card, fromIndex, fromName, toName } = info;
-        const fromDom = getDomName(fromName);
-        const toDom = getDomName(toName);
+        const { card, toName } = info;
+        const fromDom = document.querySelector('div[dcid="card' + card.value + '"]');
+        let toDom;
+        if (cardStacks[toName].length == 0) {
+            toDom = document.querySelector('div[dcid="' + toName + '"]');
+        } else {
+            toDom = document.querySelector('div[dcid="card' + cardStacks[toName][cardStacks[toName].length - 1].value + '"]');
+        }
+        animateMoveDom(fromDom, toDom);
+    } else {
+        btnElement.disabled = true;
+        const orginalContent = btnElement.textContent;
+        btnElement.textContent = '沒有可移動的牌';
 
-        console.log(`來源: ${fromName}, 目標: ${toName},card.value:${card.value}, 牌: ${PokerValuesMap[card.value].content}`);
+        setTimeout(() => {
+            btnElement.disabled = false;
+            btnElement.textContent = orginalContent;
+        }, 1000);
     }
+}
+function animateMoveDom(element1, element2) {
+    const { x, y, height } = element2.getBoundingClientRect();
+    const element1Clone = element1.cloneNode(true);
+    const app = document.body.querySelector("#app");
+    app.appendChild(element1Clone);
+    element1Clone.style.position = 'absolute';
+    element1Clone.style.zIndex = 9999;
+    element1Clone.style.top = Math.floor(y + height / 3) + 'px';
+    element1Clone.style.boxShadow = '0 0 10px 5px limegreen';
+    element1Clone.style.left = Math.floor(x) + 'px';
+    element1.style.opacity = 0.5;
+    setTimeout(() => {
+        app.removeChild(element1Clone);
+        element1.style.opacity = 1;
+    }, 1000);
 }
 
 </script>
@@ -260,10 +290,10 @@ function showHint() {
             </div>
             <span>
                 <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
-                <button style="font-size: 1.5rem;" @click="showHint">提示</button>
+                <button style="font-size: 1.5rem;" @click="(e) => showHint(e)">提示</button>
             </span>
         </div>
-        <GameBoard style="display: flex;" @click="startTimer">
+        <GameBoard style="display: flex; position: relative;" @click="startTimer">
             <div>
                 <div class="text">發牌區</div>
                 <DealerArea :dealer="dealer" :deck="cardStacks.delaerStacks" :moveCard="dealerMove"
@@ -273,7 +303,7 @@ function showHint() {
                     :change="cardChange" />
             </div>
             <div style="display: grid;grid-template-columns: repeat(7, 1fr); overflow:fit-content;">
-                <div>
+                <div dcid="first">
                     <draggable :list="cardStacks.first" group="pokers" itemKey="value" class="drag-cards"
                         :move="limitLocalMove" @change="cardChange" ref="first">
                         <template #item="{ element, index }">
@@ -282,7 +312,7 @@ function showHint() {
                         </template>
                     </draggable>
                 </div>
-                <div>
+                <div dcid="second">
                     <draggable :list="cardStacks.second" group="pokers" itemKey="value" class="drag-cards"
                         :move="limitLocalMove" @change="cardChange" ref="second">
                         <template #item="{ element, index }">
@@ -291,7 +321,7 @@ function showHint() {
                         </template>
                     </draggable>
                 </div>
-                <div>
+                <div dcid="third">
                     <draggable :list="cardStacks.third" group="pokers" itemKey="value" class="drag-cards"
                         :move="limitLocalMove" @change="cardChange" ref="third">
                         <template #item="{ element, index }">
@@ -300,7 +330,7 @@ function showHint() {
                         </template>
                     </draggable>
                 </div>
-                <div>
+                <div dcid="fourth">
                     <draggable :list="cardStacks.fourth" group="pokers" itemKey="value" class="drag-cards"
                         :move="limitLocalMove" @change="cardChange" ref="fourth">
                         <template #item="{ element, index }">
@@ -309,7 +339,7 @@ function showHint() {
                         </template>
                     </draggable>
                 </div>
-                <div>
+                <div dcid="fifth">
                     <draggable :list="cardStacks.fifth" group="pokers" itemKey="value" class="drag-cards"
                         :move="limitLocalMove" @change="cardChange" ref="fifth">
                         <template #item="{ element, index }">
@@ -319,7 +349,7 @@ function showHint() {
                     </draggable>
                 </div>
 
-                <div>
+                <div dcid="sixth">
                     <draggable :list="cardStacks.sixth" group="pokers" itemKey="value" class="drag-cards"
                         :move="limitLocalMove" @change="cardChange" ref="sixth">
                         <template #item="{ element, index }">
@@ -328,7 +358,7 @@ function showHint() {
                         </template>
                     </draggable>
                 </div>
-                <div>
+                <div dcid="seventh">
                     <draggable :list="cardStacks.seventh" group="pokers" itemKey="value" class="drag-cards"
                         :move="limitLocalMove" @change="cardChange" ref="seventh">
                         <template #item="{ element, index }">

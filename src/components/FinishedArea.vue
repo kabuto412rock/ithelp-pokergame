@@ -51,7 +51,7 @@ onMounted(() => {
 </script>
 <template>
     <div style="display: flex;">
-        <div class="card club">
+        <div class="card club" dcid="club">
             <draggable :list="fourCards.club" group="pokers" itemKey="value" class="drag-cards" ref="club" :move="moveCard"
                 @change="change">
                 <template #item="{ element, index }">
@@ -59,7 +59,7 @@ onMounted(() => {
                 </template>
             </draggable>
         </div>
-        <div class="card diamond">
+        <div class="card diamond" dcid="diamond">
             <draggable :list="fourCards.diamond" group="pokers" itemKey="value" class="drag-cards" ref="diamond"
                 :move="moveCard" @change="change">
                 <template #item="{ element, index }">
@@ -67,7 +67,7 @@ onMounted(() => {
                 </template>
             </draggable>
         </div>
-        <div class="card heart">
+        <div class="card heart" dcid="heart">
             <draggable :list="fourCards.heart" group="pokers" itemKey="value" class="drag-cards" ref="heart"
                 :move="moveCard" @change="change">
                 <template #item="{ element, index }">
@@ -75,7 +75,7 @@ onMounted(() => {
                 </template>
             </draggable>
         </div>
-        <div class="card spade">
+        <div class="card spade" dcid="spade">
             <draggable :list="fourCards.spade" group="pokers" itemKey="value" class="drag-cards" ref="spade"
                 :move="moveCard" @change="change">
                 <template #item="{ element, index }">
