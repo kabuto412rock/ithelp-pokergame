@@ -182,11 +182,14 @@ function getMoveHint(cardStacks, dealerIndex) {
             // 由上往下找，遇到未開牌就跳過
             if (!card.isOpen) continue;
             if (tailValuesMap.has(card.value)) {
+                const toName = tailValuesMap.get(card.value);
+                // 只能拿最後一張牌放 結算牌堆
+                if (FOUR_SUITS.includes(toName) && i !== len - 1) continue;
                 hintAnswer = {
                     fromName: name,
                     card: card,
                     fromIndex: i,
-                    toName: tailValuesMap.get(card.value),
+                    toName: toName,
                 };
                 break;
             }
