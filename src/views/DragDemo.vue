@@ -4,8 +4,8 @@
  */
 import { onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
-import { FOUR_SUITS } from '../utils/constants';
-import { geneateShuffleDeck, checkNextOk, checkNextOk2 } from "../utils/poker-helper";
+import { FOUR_SUITS, SEVEN_STACKS } from '../utils/constants';
+import { geneateShuffleDeck, checkNextOk, checkNextOk2, findTailCards } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
 import Card from '../components/Card.vue';
 import DealerArea from '../components/DealerArea.vue';
@@ -39,7 +39,6 @@ const fourCardsDom = reactive({
     spade: null,
 });
 let dealer = reactive({ index: 0 });
-const validNames = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh'];
 let gameScore = ref(0);
 const gameTime = ref(0);
 const gameTimer = ref(null);
@@ -50,7 +49,7 @@ onMounted(() => {
 
 watch(cardStacks, (stacks) => {
     // 檢查每組牌堆最後一張
-    validNames.forEach(cardName => {
+    SEVEN_STACKS.forEach(cardName => {
         if (stacks[cardName].length > 0) {
             const lastCard = stacks[cardName][stacks[cardName].length - 1];
             if (!lastCard.isOpen) {
@@ -65,7 +64,7 @@ const changeOption = ref(null);
 function resetGame() {
     const data = geneateShuffleDeck(52); // 洗亂的52張牌
     const everyIndex = [0, 1, 3, 6, 10, 15, 21, 28]// 7牌堆每個牌堆的起始index
-    validNames.forEach((name, idx) => {
+    SEVEN_STACKS.forEach((name, idx) => {
         let cards = data.slice(everyIndex[idx], everyIndex[idx + 1]);
         cards[cards.length - 1].isOpen = true;
         cardStacks[name] = cards;
@@ -192,7 +191,7 @@ function dealerMove(evt) {
 function finishedCardMove(evt) {
     const to = getDomName(evt.to);
 
-    let result = validNames.includes(to);
+    let result = SEVEN_STACKS.includes(to);
     console.log(`結算牌堆移動to: ${to}, result: ${result}`);
     const { futureIndex, element } = evt.draggedContext;
     // 只能移動至目標牌堆的最後一張牌
@@ -248,6 +247,7 @@ function startTimer() {
                 經過時間: {{ gameTime }} 秒
             </div>
             <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
+            <button @click="() => console.log(findTailCards(cardStacks))">提示</button>
         </div>
         <GameBoard style="display: flex;" @click="startTimer">
             <div>

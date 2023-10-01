@@ -1,7 +1,8 @@
 /**
  * @typedef {import('../../@types/index').Card} Card
+ * @typedef {import('../../@types/index').CardStacks} CardStacks
  */
-import { FOUR_SUITS } from "./constants";
+import { FOUR_SUITS, SEVEN_STACKS } from "./constants";
 /**
  * 洗撲克牌
  * @param {Card[]} deck 
@@ -97,10 +98,58 @@ function checkNextOk2(pokerColor, fourCards, card) {
     return lastCardNumber + 1 === pokerNumber;
 }
 
+/**
+ * 找出7牌堆、結算牌堆各牌尾後要接的牌
+ * @param {CardStacks} cardstacks
+ * @returns {Map<String, Array<Number>>} Map<目標牌堆名稱, 牌尾陣列>
+ */
+function findTailCards(cardstacks) {
+    const result = new Map();
+
+    // 找出可拖曳至7牌堆尾巴的牌
+    SEVEN_STACKS.forEach((name) => {
+        const stack = cardstacks[name];
+        if (stack.length === 0) {
+            result.set(name, [12, 25, 38, 51]);
+            return;
+        }
+
+        const lastCard = stack[stack.length - 1];
+        const lastCardNumber = lastCard.value % 13;
+        const lastCardSymbol = Math.floor(lastCard.value / 13);
+
+        // 檢查是否為A，則跳過
+        if (lastCardNumber === 0) {
+            return;
+        }
+        const matchNumber = lastCardNumber - 1;
+        const isBlack = lastCardSymbol % 3 == 0;
+        result.set(name, [matchNumber + (isBlack ? 13 : 0), matchNumber + (isBlack ? 26 : 39)]);
+    });
+    // 找出可拖曳至結算牌堆尾巴的牌
+    FOUR_SUITS.forEach((name, index) => {
+        const stack = cardstacks[name];
+        if (stack.length === 0) {
+            result.set(name, [0 + index * 13]);
+            return;
+        }
+
+        const lastCard = stack[stack.length - 1];
+        const lastCardNumber = lastCard.value % 13;
+        // 檢查是否為K，則跳過
+        if (lastCardNumber === 12) {
+            return;
+        }
+        const matchNumber = lastCardNumber + 1;
+        result.set(name, [matchNumber + index * 13]);
+    });
+    return result;
+}
 export {
     geneateShuffleDeck,
     geneateDeck,
     getPosition,
     checkNextOk,
-    checkNextOk2
+    checkNextOk2,
+    findTailCards
 }
