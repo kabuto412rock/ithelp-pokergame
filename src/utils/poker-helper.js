@@ -214,6 +214,61 @@ function getMoveHint(cardStacks, dealerIndex) {
 
     return hintAnswer;
 }
+
+/**
+ * 找出`指定牌`可以接在哪一個牌堆(7牌堆or結算牌堆)的後面
+ * @param {CardStacks} cardstacks 牌堆
+ * @param {Card} targetCard 指定牌
+ * @returns {Array<String>} Array<目標牌堆名稱>
+ */
+function findFollowDeckName(cardstacks, targetCard) {
+    const result = new Set();
+
+    // 找出可拖曳至7牌堆尾巴的牌
+    SEVEN_STACKS.forEach((name) => {
+        const stack = cardstacks[name];
+        if (stack.length === 0) {
+            if ([12, 25, 38, 51].includes(targetCard.value)) {
+                result.add(name);
+            }
+            return;
+        }
+
+        const lastCard = stack[stack.length - 1];
+        const lastCardNumber = lastCard.value % 13;
+        const lastCardSymbol = Math.floor(lastCard.value / 13);
+
+        // 檢查是否為A，則跳過
+        if (lastCardNumber === 0) {
+            return;
+        }
+        const matchNumber = lastCardNumber - 1;
+        const isBlack = lastCardSymbol % 3 == 0;
+        const isInclude = [matchNumber + (isBlack ? 13 : 0), matchNumber + (isBlack ? 26 : 39)].includes(targetCard.value);
+        if (isInclude) result.add(name);
+    });
+
+
+    // 找出可拖曳至結算牌堆尾巴的牌
+    FOUR_SUITS.forEach((name, index) => {
+        const stack = cardstacks[name];
+        if (stack.length === 0) {
+            if (index * 13 == targetCard.value) result.add(name);
+            return;
+        }
+        const lastCard = stack[stack.length - 1];
+        const lastCardNumber = lastCard.value % 13;
+        // 檢查是否為K，則跳過
+        if (lastCardNumber === 12) {
+            return;
+        }
+        const matchNumber = lastCardNumber + 1;
+        if (matchNumber + index * 13 == targetCard.value) {
+            result.add(name);
+        }
+    });
+    return Array.from(result);
+}
 export {
     geneateShuffleDeck,
     geneateDeck,
@@ -221,5 +276,5 @@ export {
     checkNextOk,
     checkNextOk2,
     getMoveHint,
-    findTailCards
+    findFollowDeckName
 }

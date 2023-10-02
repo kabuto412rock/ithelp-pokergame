@@ -5,7 +5,7 @@
 import { onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
 import { FOUR_SUITS, PokerValuesMap, SEVEN_STACKS } from '../utils/constants';
-import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint, findTailCards } from "../utils/poker-helper";
+import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint, findFollowDeckName } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
 import Card from '../components/Card.vue';
 import DealerArea from '../components/DealerArea.vue';
@@ -284,13 +284,18 @@ function animateMoveDom(element1, element2) {
  * @param {Card} card 想移動的牌
  */
 function clickAutoMove(fromName, card) {
-    const map = findTailCards(cardStacks);
-    // 如果有找到尾牌
-    if (!map.has(card.value)) {
+    const toNames = findFollowDeckName(cardStacks, card).sort((a, b) => {
+        const aOrder = a.length + FOUR_SUITS.includes(a) ? -100 : 0;
+        const bOrder = b.length + FOUR_SUITS.includes(b) ? -100 : 0;
+        return aOrder - bOrder;
+    })
+    // 如果沒找到對應牌堆，則不執行
+    if (toNames.length == 0) {
         console.log(`卡牌${PokerValuesMap[card.value].content}沒有符合移動的規則`);
         return;
     }
-    const toName = map.get(card.value);
+
+    const toName = toNames[0];
     const isToFinishedArea = FOUR_SUITS.includes(toName);
     if (fromName == 'dealerStacks') {
         // 來自`發牌堆`
@@ -309,6 +314,31 @@ function clickAutoMove(fromName, card) {
         gameScore.value += isToFinishedArea ? 25 : 10;
     } else if (SEVEN_STACKS.includes(fromName)) {
         // 來自7牌堆
+        const fromLength = cardStacks[fromName].length;
+        const fromIndex = cardStacks[fromName].findIndex(c => c.value == card.value);
+
+        if (isToFinishedArea) {
+            if (fromIndex != fromLength - 1) {
+                console.log(`卡牌${PokerValuesMap[card.value].content}不是${fromName}的最後一張牌，不可移入結算牌堆`);
+                return;
+            }
+            const newFromCards = cardStacks[fromName].slice(0, fromIndex);
+            const newToCards = [
+                ...cardStacks[toName],
+                card
+            ];
+            cardStacks[fromName] = newFromCards;
+            cardStacks[toName] = newToCards;
+            gameScore.value += 15;
+        } else {
+            const newFromCards = cardStacks[fromName].slice(0, fromIndex);
+            const newToCards = [
+                ...cardStacks[toName],
+                ...cardStacks[fromName].slice(fromIndex)
+            ];
+            cardStacks[fromName] = newFromCards;
+            cardStacks[toName] = newToCards;
+        }
     }
 }
 </script>
@@ -342,7 +372,7 @@ function clickAutoMove(fromName, card) {
                         :move="limitLocalMove" @change="cardChange" ref="first">
                         <template #item="{ element, index }">
                             <Card :value="element.value" :isOpen="element.isOpen"
-                                @click="openCard(cardStacks.first, element)" />
+                                @click="openCard(cardStacks.first, element)" @dblclick="clickAutoMove('first', element)" />
                         </template>
                     </draggable>
                 </div>
@@ -351,7 +381,8 @@ function clickAutoMove(fromName, card) {
                         :move="limitLocalMove" @change="cardChange" ref="second">
                         <template #item="{ element, index }">
                             <Card :value="element.value" :isOpen="element.isOpen"
-                                @click="openCard(cardStacks.second, element)" />
+                                @click="openCard(cardStacks.second, element)"
+                                @dblclick="clickAutoMove('second', element)" />
                         </template>
                     </draggable>
                 </div>
@@ -360,7 +391,7 @@ function clickAutoMove(fromName, card) {
                         :move="limitLocalMove" @change="cardChange" ref="third">
                         <template #item="{ element, index }">
                             <Card :value="element.value" :isOpen="element.isOpen"
-                                @click="openCard(cardStacks.third, element)" />
+                                @click="openCard(cardStacks.third, element)" @dblclick="clickAutoMove('third', element)" />
                         </template>
                     </draggable>
                 </div>
@@ -369,7 +400,8 @@ function clickAutoMove(fromName, card) {
                         :move="limitLocalMove" @change="cardChange" ref="fourth">
                         <template #item="{ element, index }">
                             <Card :value="element.value" :isOpen="element.isOpen"
-                                @click="openCard(cardStacks.fourth, element)" />
+                                @click="openCard(cardStacks.fourth, element)"
+                                @dblclick="clickAutoMove('fourth', element)" />
                         </template>
                     </draggable>
                 </div>
@@ -378,7 +410,7 @@ function clickAutoMove(fromName, card) {
                         :move="limitLocalMove" @change="cardChange" ref="fifth">
                         <template #item="{ element, index }">
                             <Card :value="element.value" :isOpen="element.isOpen"
-                                @click="openCard(cardStacks.fifth, element)" />
+                                @click="openCard(cardStacks.fifth, element)" @dblclick="clickAutoMove('fifth', element)" />
                         </template>
                     </draggable>
                 </div>
@@ -388,7 +420,7 @@ function clickAutoMove(fromName, card) {
                         :move="limitLocalMove" @change="cardChange" ref="sixth">
                         <template #item="{ element, index }">
                             <Card :value="element.value" :isOpen="element.isOpen"
-                                @click="openCard(cardStacks.sixth, element)" />
+                                @click="openCard(cardStacks.sixth, element)" @dblclick="clickAutoMove('sixth', element)" />
                         </template>
                     </draggable>
                 </div>
@@ -397,7 +429,8 @@ function clickAutoMove(fromName, card) {
                         :move="limitLocalMove" @change="cardChange" ref="seventh">
                         <template #item="{ element, index }">
                             <Card :value="element.value" :isOpen="element.isOpen"
-                                @click="openCard(cardStacks.seventh, element)" />
+                                @click="openCard(cardStacks.seventh, element)"
+                                @dblclick="clickAutoMove('seventh', element)" />
                         </template>
                     </draggable>
                 </div>
