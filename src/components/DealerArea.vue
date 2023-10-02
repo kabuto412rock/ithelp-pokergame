@@ -2,7 +2,7 @@
 import draggable from 'vuedraggable'
 import { computed, reactive, ref, watch } from 'vue';
 import Card from '../components/Card.vue';
-const emit = defineEmits(['idx']);
+const emit = defineEmits(['idx', 'card-click']);
 const props = defineProps(
     {
         dealer: {
@@ -51,7 +51,7 @@ const deckState = computed(() => {
         <!-- 移牌區 - 左邊水平疊牌最多三張 -->
         <draggable :list="canTakeCards" group="pokers" itemKey="value" class="list-group" :move="moveCard">
             <template #item="{ element, index }">
-                <Card :value="element.value" :isOpen="element.isOpen" />
+                <Card :value="element.value" :isOpen="element.isOpen" @dblclick="emit('card-click', element)" />
             </template>
         </draggable>
         <!-- 發牌堆 -->

@@ -4,8 +4,8 @@
  */
 import { onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
-import { FOUR_SUITS, SEVEN_STACKS, PokerValuesMap } from '../utils/constants';
-import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint } from "../utils/poker-helper";
+import { FOUR_SUITS, PokerValuesMap, SEVEN_STACKS } from '../utils/constants';
+import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint, findTailCards } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
 import Card from '../components/Card.vue';
 import DealerArea from '../components/DealerArea.vue';
@@ -26,7 +26,7 @@ const cardStacks = reactive({
     /** @type {Card[]} */ sixth: [],
     /** @type {Card[]} */ seventh: [],
     /** @type {Card[]} */ none: [],
-    /** @type {Card[]} */ delaerStacks: [],
+    /** @type {Card[]} */ dealerStacks: [],
      /** @type {Card[]} */ club: [],
      /** @type {Card[]} */ diamond: [],
      /** @type {Card[]} */ heart: [],
@@ -70,7 +70,7 @@ function resetGame() {
         cardStacks[name] = cards;
     });
     // 發牌區
-    cardStacks.delaerStacks = data.slice(28).map(card => ({ ...card, isOpen: true }));
+    cardStacks.dealerStacks = data.slice(28).map(card => ({ ...card, isOpen: true }));
     // 結算牌堆區
     FOUR_SUITS.forEach(name => {
         cardStacks[name] = [];
@@ -180,7 +180,7 @@ function dealerMove(evt) {
     }
     if (result) {
         changeOption.value = () => {
-            cardStacks.delaerStacks = cardStacks.delaerStacks.filter(card => card.value !== dealerCard.value);
+            cardStacks.dealerStacks = cardStacks.dealerStacks.filter(card => card.value !== dealerCard.value);
             gameScore.value += 10 + (isToFinishedArea ? 15 : 0);
             changeOption.value = null;
         };
@@ -277,6 +277,40 @@ function animateMoveDom(element1, element2) {
     }, 1000);
 }
 
+
+/**
+ * 自動移動
+ * @param {String} fromName 來自的牌堆名稱
+ * @param {Card} card 想移動的牌
+ */
+function clickAutoMove(fromName, card) {
+    const map = findTailCards(cardStacks);
+    // 如果有找到尾牌
+    if (!map.has(card.value)) {
+        console.log(`卡牌${PokerValuesMap[card.value].content}沒有符合移動的規則`);
+        return;
+    }
+    const toName = map.get(card.value);
+    const isToFinishedArea = FOUR_SUITS.includes(toName);
+    if (fromName == 'dealerStacks') {
+        // 來自`發牌堆`
+        const fromIndex = cardStacks[fromName].findIndex(c => c.value == card.value);
+
+        const newFromCards = [
+            ...cardStacks[fromName].slice(0, fromIndex),
+            ...cardStacks[fromName].slice(fromIndex + 1)
+        ];
+        const newToCards = [
+            ...cardStacks[toName],
+            cardStacks[fromName][fromIndex]
+        ];
+        cardStacks[fromName] = newFromCards;
+        cardStacks[toName] = newToCards;
+        gameScore.value += isToFinishedArea ? 25 : 10;
+    } else if (SEVEN_STACKS.includes(fromName)) {
+        // 來自7牌堆
+    }
+}
 </script>
 <template>
     <main>
@@ -296,8 +330,8 @@ function animateMoveDom(element1, element2) {
         <GameBoard style="display: flex; position: relative;" @click="startTimer">
             <div>
                 <div class="text">發牌區</div>
-                <DealerArea :dealer="dealer" :deck="cardStacks.delaerStacks" :moveCard="dealerMove"
-                    @idx="v => { dealer.index = v; }" />
+                <DealerArea :dealer="dealer" :deck="cardStacks.dealerStacks" :moveCard="dealerMove"
+                    @idx="v => { dealer.index = v; }" @card-click="(card) => clickAutoMove('dealerStacks', card)" />
                 <div class="text">結算牌堆</div>
                 <FinishedArea :fourCards="cardStacks" :moveCard="finishedCardMove" @doms="setFourCardDoms"
                     :change="cardChange" />

@@ -162,13 +162,13 @@ function getMoveHint(cardStacks, dealerIndex) {
     let hintAnswer = null;
     // 發牌區
     let startIndex = dealerIndex < 3 ? 0 : dealerIndex - 3;
-    const dealerCards = cardStacks['delaerStacks'].slice(startIndex, dealerIndex);
+    const dealerCards = cardStacks['dealerStacks'].slice(startIndex, dealerIndex);
     dealerCards.forEach((card) => {
         if (tailValuesMap.has(card.value)) {
             hintAnswer = {
-                fromName: 'delaerStacks',
+                fromName: 'dealerStacks',
                 card: card,
-                fromIndex: cardStacks['delaerStacks'].findIndex((c) => c.value === card.value),
+                fromIndex: cardStacks['dealerStacks'].findIndex((c) => c.value === card.value),
                 toName: tailValuesMap.get(card.value),
             };
         }
@@ -220,5 +220,6 @@ export {
     getPosition,
     checkNextOk,
     checkNextOk2,
-    getMoveHint
+    getMoveHint,
+    findTailCards
 }

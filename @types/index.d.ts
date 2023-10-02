@@ -12,7 +12,7 @@ interface CardStacks {
     sixth: Card[];
     seventh: Card[];
     none: Card[];
-    delaerStacks: Card[];
+    dealerStacks: Card[];
     club: Card[];
     diamond: Card[];
     heart: Card[];
