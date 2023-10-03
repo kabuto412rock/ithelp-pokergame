@@ -269,6 +269,17 @@ function findFollowDeckName(cardstacks, targetCard) {
     });
     return Array.from(result);
 }
+
+/** 
+ * 檢查紙牌接龍是否完成
+ * @param {CardStacks} cardStacks 
+ */
+function checkSolitaireGameDone(cardStacks) {
+    for (let i = 0; i < FOUR_SUITS.length; i++) {
+        if (cardStacks[FOUR_SUITS[i]].length !== 13) return false;
+    }
+    return true;
+}
 export {
     geneateShuffleDeck,
     geneateDeck,
@@ -276,5 +287,6 @@ export {
     checkNextOk,
     checkNextOk2,
     getMoveHint,
-    findFollowDeckName
+    findFollowDeckName,
+    checkSolitaireGameDone
 }
