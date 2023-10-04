@@ -4,6 +4,7 @@
  */
 import { onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
+import { BModal } from 'bootstrap-vue-next';
 import { FOUR_SUITS, PokerValuesMap, SEVEN_STACKS } from '../utils/constants';
 import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint, findFollowDeckName, checkSolitaireGameDone } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
@@ -42,7 +43,7 @@ let dealer = reactive({ index: 0 });
 let gameScore = ref(0);
 const gameTime = ref(0);
 const gameTimer = ref(null);
-
+const doneModal = ref(false);
 onMounted(() => {
     resetGame();
 });
@@ -81,6 +82,9 @@ function resetGame() {
     gameTime.value = 0;
     clearInterval(gameTimer.value);
     gameTimer.value = null;
+
+    // 關閉結算視窗
+    doneModal.value = false;
 }
 function setFourCardDoms(cardDomMaps) {
     FOUR_SUITS.forEach(name => {
@@ -344,13 +348,22 @@ function clickAutoMove(fromName, card) {
 watch(cardStacks, (newCardStacks) => {
     const isDone = checkSolitaireGameDone(newCardStacks);
     if (isDone) {
-        alert(`遊戲結束，花費時間: ${gameTime.value} 秒 總分數: ${gameScore.value}!!!`);
-        resetGame();
+        doneModal.value = true;
     }
 })
+watch(doneModal, (newValue, oldValue) => {
+    if (newValue) {
+        clearInterval(gameTimer.value);
+    }
+});
 </script>
 <template>
     <main>
+        <BModal v-model="doneModal" title="結算畫面" hide-footer @close="resetGame" @hide="resetGame">
+            <h1>玩家 xxx</h1>
+            <div>花費時間: {{ gameTime }} 秒</div>
+            <div>總分數: {{ gameScore }} 分</div>
+        </BModal>
         <div
             style=" display: flex; flex-wrap: wrap; flex-direction: row;justify-content: space-around; align-items: center;  background-color: antiquewhite; font-size: large;">
             <div>
