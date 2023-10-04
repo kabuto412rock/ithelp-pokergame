@@ -288,18 +288,15 @@ function animateMoveDom(element1, element2) {
  * @param {Card} card 想移動的牌
  */
 function clickAutoMove(fromName, card) {
-    const toNames = findFollowDeckName(cardStacks, card).sort((a, b) => {
-        const aOrder = a.length + FOUR_SUITS.includes(a) ? -100 : 0;
-        const bOrder = b.length + FOUR_SUITS.includes(b) ? -100 : 0;
-        return aOrder - bOrder;
-    })
+    const toNames = findFollowDeckName(cardStacks, card);
     // 如果沒找到對應牌堆，則不執行
     if (toNames.length == 0) {
         console.log(`卡牌${PokerValuesMap[card.value].content}沒有符合移動的規則`);
         return;
     }
 
-    const toName = toNames[0];
+    const toName = toNames.find((name) => FOUR_SUITS.includes(name)) ?? toNames[0];
+    console.log(`可移動至的牌堆有: ${toNames}, 選擇移動至: ${toName}`);
     const isToFinishedArea = FOUR_SUITS.includes(toName);
     if (fromName == 'dealerStacks') {
         // 來自`發牌堆`
