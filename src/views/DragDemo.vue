@@ -26,7 +26,6 @@ const cardStacks = reactive({
     /** @type {Card[]} */ fifth: [],
     /** @type {Card[]} */ sixth: [],
     /** @type {Card[]} */ seventh: [],
-    /** @type {Card[]} */ none: [],
     /** @type {Card[]} */ dealerStacks: [],
      /** @type {Card[]} */ club: [],
      /** @type {Card[]} */ diamond: [],
@@ -39,6 +38,8 @@ const fourCardsDom = reactive({
     heart: null,
     spade: null,
 });
+const history = ref([]);
+
 let dealer = reactive({ index: 0 });
 let gameScore = ref(0);
 const gameTime = ref(0);
@@ -85,7 +86,10 @@ function resetGame() {
 
     // 關閉結算視窗
     doneModal.value = false;
+    history.value = [];
+    pushStateToHistory();
 }
+
 function setFourCardDoms(cardDomMaps) {
     FOUR_SUITS.forEach(name => {
         const domElement = cardDomMaps[name];
@@ -156,6 +160,7 @@ function limitLocalMove(evt) {
             cardStacks[to] = isToFinishedArea ? newToCards.sort((a, b) => a.value - b.value) : newToCards;
             if (isToFinishedArea) {
                 gameScore.value += 15;
+                pushStateToHistory();
             }
             changeOption.value = null;
         };
@@ -187,6 +192,7 @@ function dealerMove(evt) {
             cardStacks.dealerStacks = cardStacks.dealerStacks.filter(card => card.value !== dealerCard.value);
             gameScore.value += 10 + (isToFinishedArea ? 15 : 0);
             changeOption.value = null;
+            pushStateToHistory();
         };
     }
     return result;
@@ -208,6 +214,7 @@ function finishedCardMove(evt) {
         changeOption.value = () => {
             gameScore.value -= 15;
             changeOption.value = null;
+            pushStateToHistory();
         };
     }
     return result;
@@ -341,6 +348,7 @@ function clickAutoMove(fromName, card) {
             cardStacks[toName] = newToCards;
         }
     }
+    pushStateToHistory();
 }
 watch(cardStacks, (newCardStacks) => {
     const isDone = checkSolitaireGameDone(newCardStacks);
@@ -353,6 +361,56 @@ watch(doneModal, (newValue, oldValue) => {
         clearInterval(gameTimer.value);
     }
 });
+/** 儲存當前狀態到歷史紀錄 */
+function pushStateToHistory() {
+    if (history.value.length > 30) {
+        const startIndex = history.value.length - 30;
+        history.value = history.value.slice(startIndex, history.value.length);
+    }
+    const elemFunc = (card) => ({
+        "value": card.value,
+        "isOpen": card.isOpen,
+        "isDone": card.isDone,
+    });
+    history.value = [
+        ...history.value,
+        {
+            "cardStacks": {
+                first: cardStacks.first.slice().map(elemFunc),
+                second: cardStacks.second.slice().map(elemFunc),
+                third: cardStacks.third.slice().map(elemFunc),
+                fourth: cardStacks.fourth.slice().map(elemFunc),
+                fifth: cardStacks.fifth.slice().map(elemFunc),
+                sixth: cardStacks.sixth.slice().map(elemFunc),
+                seventh: cardStacks.seventh.slice().map(elemFunc),
+                dealerStacks: cardStacks.dealerStacks.slice().map(elemFunc),
+                club: cardStacks.club.slice().map(elemFunc),
+                diamond: cardStacks.diamond.slice().map(elemFunc),
+                heart: cardStacks.heart.slice().map(elemFunc),
+                spade: cardStacks.spade.slice().map(elemFunc),
+            },
+            "gameScore": JSON.parse(JSON.stringify(gameScore.value)),
+            "dealer": { index: dealer.index },
+        }
+    ];
+}
+/** 返回上一步 */
+function undo() {
+    if (history.value.length > 1) {
+        const prevHistory = history.value.slice(0, history.value.length - 1);
+        history.value = prevHistory;
+        const prevState = prevHistory[prevHistory.length - 1];
+        cardStacks.dealerStacks = prevState.cardStacks.dealerStacks;
+        FOUR_SUITS.forEach((deckName) => {
+            cardStacks[deckName] = prevState.cardStacks[deckName];
+        })
+        SEVEN_STACKS.forEach((deckName) => {
+            cardStacks[deckName] = prevState.cardStacks[deckName];
+        })
+        gameScore.value = prevState.gameScore;
+        dealer = prevState.dealer;
+    }
+}
 </script>
 <template>
     <main>
@@ -372,13 +430,15 @@ watch(doneModal, (newValue, oldValue) => {
             <span>
                 <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
                 <button style="font-size: 1.5rem;" @click="(e) => showHint(e)">提示</button>
+                <button style="font-size: 1.5rem;" @click="undo">上一步</button>
             </span>
         </div>
         <GameBoard style="display: flex; position: relative;" @click="startTimer">
             <div>
                 <div class="text">發牌區</div>
                 <DealerArea :dealer="dealer" :deck="cardStacks.dealerStacks" :moveCard="dealerMove"
-                    @idx="v => { dealer.index = v; }" @card-click="(card) => clickAutoMove('dealerStacks', card)" />
+                    @idx="v => { dealer.index = v; pushStateToHistory(); }"
+                    @card-click="(card) => clickAutoMove('dealerStacks', card)" />
                 <div class="text">結算牌堆</div>
                 <FinishedArea :fourCards="cardStacks" :moveCard="finishedCardMove" @doms="setFourCardDoms"
                     :change="cardChange" />
