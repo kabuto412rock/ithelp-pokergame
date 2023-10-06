@@ -301,11 +301,9 @@ function clickAutoMove(fromName, card) {
         console.log(`卡牌${PokerValuesMap[card.value].content}沒有符合移動的規則`);
         return;
     }
-
-    const toName = toNames.find((name) => FOUR_SUITS.includes(name)) ?? toNames[0];
-    console.log(`可移動至的牌堆有: ${toNames}, 選擇移動至: ${toName}`);
-    const isToFinishedArea = FOUR_SUITS.includes(toName);
+    let toName = toNames.find((name) => FOUR_SUITS.includes(name)) ?? toNames[0];
     if (fromName == 'dealerStacks') {
+        console.log(`可移動至的牌堆有: ${toNames}, 選擇移動至: ${toName}`);
         // 來自`發牌堆`
         const fromIndex = cardStacks[fromName].findIndex(c => c.value == card.value);
 
@@ -319,17 +317,13 @@ function clickAutoMove(fromName, card) {
         ];
         cardStacks[fromName] = newFromCards;
         cardStacks[toName] = newToCards;
-        gameScore.value += isToFinishedArea ? 25 : 10;
+        gameScore.value += FOUR_SUITS.includes(toName) ? 25 : 10;
+        return pushStateToHistory();
     } else if (SEVEN_STACKS.includes(fromName)) {
         // 來自7牌堆
         const fromLength = cardStacks[fromName].length;
         const fromIndex = cardStacks[fromName].findIndex(c => c.value == card.value);
-        console.log(`toName: ${toName}`)
-        if (isToFinishedArea) {
-            if (fromIndex != fromLength - 1) {
-                console.log(`卡牌${PokerValuesMap[card.value].content}不是${fromName}的最後一張牌，不可移入結算牌堆`);
-                return;
-            }
+        if (FOUR_SUITS.includes(toName) && fromIndex === (fromLength - 1)) {
             const newFromCards = cardStacks[fromName].slice(0, fromIndex);
             const newToCards = [
                 ...cardStacks[toName],
@@ -338,7 +332,10 @@ function clickAutoMove(fromName, card) {
             cardStacks[fromName] = newFromCards;
             cardStacks[toName] = newToCards;
             gameScore.value += 15;
-        } else {
+            return pushStateToHistory();
+        }
+        toName = toNames.find((name) => SEVEN_STACKS.includes(name));
+        if (toName) {
             const newFromCards = cardStacks[fromName].slice(0, fromIndex);
             const newToCards = [
                 ...cardStacks[toName],
@@ -346,9 +343,9 @@ function clickAutoMove(fromName, card) {
             ];
             cardStacks[fromName] = newFromCards;
             cardStacks[toName] = newToCards;
+            return pushStateToHistory();
         }
     }
-    pushStateToHistory();
 }
 watch(cardStacks, (newCardStacks) => {
     const isDone = checkSolitaireGameDone(newCardStacks);
