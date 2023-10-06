@@ -2,11 +2,11 @@
 /**
  * @typedef {import('../../@types/index').Card} Card
  */
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
 import { BModal } from 'bootstrap-vue-next';
 import { FOUR_SUITS, PokerValuesMap, SEVEN_STACKS } from '../utils/constants';
-import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint, findFollowDeckName, checkSolitaireGameDone } from "../utils/poker-helper";
+import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint, findFollowDeckName, checkSolitaireGameDone, getRemainCardCount } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
 import Card from '../components/Card.vue';
 import DealerArea from '../components/DealerArea.vue';
@@ -324,7 +324,7 @@ function clickAutoMove(fromName, card) {
         // 來自7牌堆
         const fromLength = cardStacks[fromName].length;
         const fromIndex = cardStacks[fromName].findIndex(c => c.value == card.value);
-
+        console.log(`toName: ${toName}`)
         if (isToFinishedArea) {
             if (fromIndex != fromLength - 1) {
                 console.log(`卡牌${PokerValuesMap[card.value].content}不是${fromName}的最後一張牌，不可移入結算牌堆`);
@@ -352,6 +352,7 @@ function clickAutoMove(fromName, card) {
 }
 watch(cardStacks, (newCardStacks) => {
     const isDone = checkSolitaireGameDone(newCardStacks);
+
     if (isDone) {
         doneModal.value = true;
     }
@@ -360,6 +361,11 @@ watch(doneModal, (newValue, oldValue) => {
     if (newValue) {
         clearInterval(gameTimer.value);
     }
+});
+// 發牌區、七牌堆的剩餘牌數
+const remainCardCounts = computed(() => {
+    const { dealer, seven } = getRemainCardCount(cardStacks);
+    return { dealer, seven };
 });
 /** 儲存當前狀態到歷史紀錄 */
 function pushStateToHistory() {
@@ -416,8 +422,11 @@ function undo() {
     <main>
         <BModal v-model="doneModal" title="結算畫面" hide-footer @close="resetGame" @hide="resetGame">
             <h1>玩家 xxx</h1>
-            <div>花費時間: {{ gameTime }} 秒</div>
-            <div>總分數: {{ gameScore }} 分</div>
+            <div>完成花費時間: {{ gameTime }} 秒</div>
+            <div>累計分數: {{ gameScore }} 分</div>
+            <div>發牌區剩餘 {{ remainCardCounts.dealer }} 張 x 35分</div>
+            <div>7牌堆剩餘 {{ remainCardCounts.seven }} 張 x 20分</div>
+            <div>加權總分: {{ gameScore + remainCardCounts.dealer * 35 + remainCardCounts.seven * 20 }} 分</div>
         </BModal>
         <div
             style=" display: flex; flex-wrap: wrap; flex-direction: row;justify-content: space-around; align-items: center;  background-color: antiquewhite; font-size: large;">

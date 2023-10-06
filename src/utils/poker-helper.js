@@ -275,11 +275,34 @@ function findFollowDeckName(cardstacks, targetCard) {
  * @param {CardStacks} cardStacks 
  */
 function checkSolitaireGameDone(cardStacks) {
-    for (let i = 0; i < FOUR_SUITS.length; i++) {
-        if (cardStacks[FOUR_SUITS[i]].length !== 13) return false;
-    }
-    return true;
+    // 檢查每組牌堆第一張牌覆蓋著，就代表遊戲還沒結束
+    const isDone = SEVEN_STACKS.reduce((prev, stackName) => {
+        const stack = cardStacks[stackName];
+        if (stack.length > 0 && (!stack[0].isOpen)) {
+            return false;
+        }
+        return prev;
+    }, true);
+    return isDone;
 }
+/** 
+ * 計算剩餘在發牌區和7牌堆的張數
+ * @param {CardStacks} cardStacks 
+ * @returns {Object} {dealer: number, seven: number}
+ */
+function getRemainCardCount(cardStacks) {
+    let dealerStacksCount = cardStacks['dealerStacks'].length;
+
+    let sevenCount = 0;
+    SEVEN_STACKS.forEach((name) => {
+        sevenCount += cardStacks[name].length;
+    });
+    return {
+        dealer: dealerStacksCount,
+        seven: sevenCount,
+    };
+}
+
 export {
     geneateShuffleDeck,
     geneateDeck,
@@ -288,5 +311,6 @@ export {
     checkNextOk2,
     getMoveHint,
     findFollowDeckName,
-    checkSolitaireGameDone
+    checkSolitaireGameDone,
+    getRemainCardCount
 }
