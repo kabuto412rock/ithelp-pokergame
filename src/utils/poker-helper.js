@@ -303,6 +303,44 @@ function getRemainCardCount(cardStacks) {
     };
 }
 
+/** 檢查是否已死局 
+ * @param {CardStacks} cardStacks
+ * @returns {boolean} 死局為true 活局為false
+*/
+function checkDeadGame(cardStacks) {
+    // 7牌堆中被隱藏的牌們
+    let hideCardNumbers = [];
+    // 7牌堆中第一張被翻開的牌們
+    let firstOpenCardNumbers = [];
+    // 7牌堆中最後一張牌
+    let lastCardNumbers = [];
+    SEVEN_STACKS.forEach((name) => {
+        let stack = cardStacks[name];
+        if (stack.length !== 0) {
+            lastCardNumbers.push(stack[stack.length - 1].value);
+        };
+        for (let i = 0; i < stack.length; i++) {
+            let card = stack[i];
+            if (card.isOpen) {
+                firstOpenCardNumbers.push(card.value);
+                break;
+            } else {
+                hideCardNumbers.push(card.value);
+            }
+        }
+    });
+    const isDeadGame = firstOpenCardNumbers.some((number) => {
+        const isBlack = (number / 13 % 3) === 0
+        let number1 = (number + 1) % 13 + (isBlack ? 13 : 0);
+        let number2 = (number + 1) % 13 + number + (isBlack ? 26 : 39);
+        return hideCardNumbers.includes(number1)
+            && hideCardNumbers.includes(number2)
+            // 排除例外情況: 
+            && !(lastCardNumbers.includes(number1) || lastCardNumbers.includes(number2));
+    });
+
+    return isDeadGame;
+}
 export {
     geneateShuffleDeck,
     geneateDeck,
@@ -312,5 +350,6 @@ export {
     getMoveHint,
     findFollowDeckName,
     checkSolitaireGameDone,
-    getRemainCardCount
+    getRemainCardCount,
+    checkDeadGame
 }

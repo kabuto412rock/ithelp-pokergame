@@ -6,7 +6,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
 import { BModal } from 'bootstrap-vue-next';
 import { FOUR_SUITS, PokerValuesMap, SEVEN_STACKS } from '../utils/constants';
-import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint, findFollowDeckName, checkSolitaireGameDone, getRemainCardCount } from "../utils/poker-helper";
+import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint, findFollowDeckName, checkSolitaireGameDone, getRemainCardCount, checkDeadGame } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
 import Card from '../components/Card.vue';
 import DealerArea from '../components/DealerArea.vue';
@@ -349,7 +349,8 @@ function clickAutoMove(fromName, card) {
 }
 watch(cardStacks, (newCardStacks) => {
     const isDone = checkSolitaireGameDone(newCardStacks);
-
+    const isDead = checkDeadGame(cardStacks);
+    console.log(`目前是:${isDead ? '死局' : '活局'}`)
     if (isDone) {
         doneModal.value = true;
     }
@@ -414,6 +415,7 @@ function undo() {
         dealer = prevState.dealer;
     }
 }
+
 </script>
 <template>
     <main>
