@@ -519,7 +519,63 @@ function undo() {
                 </div>
             </div>
         </GameBoard>
-
+        <div>
+            <div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>牌堆</th>
+                            <th>蓋牌</th>
+                            <th>開牌</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>first</td>
+                            <td>{{ cardStacks.first.filter(a => !a.isOpen).map(a => PokerValuesMap[a.value].content) }}</td>
+                            <td>{{ cardStacks.first.filter(a => a.isOpen).map(a => PokerValuesMap[a.value].content) }}</td>
+                        </tr>
+                        <tr>
+                            <td>second</td>
+                            <td>{{ cardStacks.second.filter(a => !a.isOpen).map(a => PokerValuesMap[a.value].content) }}
+                            </td>
+                            <td>{{ cardStacks.second.filter(a => a.isOpen).map(a => PokerValuesMap[a.value].content) }}</td>
+                        </tr>
+                        <tr>
+                            <td>third</td>
+                            <td>{{ cardStacks.third.filter(a => !a.isOpen).map(a => PokerValuesMap[a.value].content) }}
+                            </td>
+                            <td>{{ cardStacks.third.filter(a => a.isOpen).map(a => PokerValuesMap[a.value].content) }}</td>
+                        </tr>
+                        <tr>
+                            <td>fourth</td>
+                            <td>{{ cardStacks.fourth.filter(a => !a.isOpen).map(a => PokerValuesMap[a.value].content) }}
+                            </td>
+                            <td>{{ cardStacks.fourth.filter(a => a.isOpen).map(a => PokerValuesMap[a.value].content) }}</td>
+                        </tr>
+                        <tr>
+                            <td>fifth</td>
+                            <td>{{ cardStacks.fifth.filter(a => !a.isOpen).map(a => PokerValuesMap[a.value].content) }}
+                            </td>
+                            <td>{{ cardStacks.fifth.filter(a => a.isOpen).map(a => PokerValuesMap[a.value].content) }}</td>
+                        </tr>
+                        <tr>
+                            <td>sixth</td>
+                            <td>{{ cardStacks.sixth.filter(a => !a.isOpen).map(a => PokerValuesMap[a.value].content) }}
+                            </td>
+                            <td>{{ cardStacks.sixth.filter(a => a.isOpen).map(a => PokerValuesMap[a.value].content) }}</td>
+                        </tr>
+                        <tr>
+                            <td>seventh</td>
+                            <td>{{ cardStacks.seventh.filter(a => !a.isOpen).map(a => PokerValuesMap[a.value].content) }}
+                            </td>
+                            <td>{{ cardStacks.seventh.filter(a => a.isOpen).map(a => PokerValuesMap[a.value].content) }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 </template>
 <style scoped>
