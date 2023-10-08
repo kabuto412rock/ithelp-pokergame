@@ -6,7 +6,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import draggable from 'vuedraggable'
 import { BModal } from 'bootstrap-vue-next';
 import { FOUR_SUITS, PokerValuesMap, SEVEN_STACKS } from '../utils/constants';
-import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint, findFollowDeckName, checkSolitaireGameDone, getRemainCardCount, checkDeadGame } from "../utils/poker-helper";
+import { geneateShuffleDeck, checkNextOk, checkNextOk2, getMoveHint, findFollowDeckName, checkSolitaireGameDone, getRemainCardCount, checkValidMove } from "../utils/poker-helper";
 import GameBoard from '../components/GameBoard.vue';
 import Card from '../components/Card.vue';
 import DealerArea from '../components/DealerArea.vue';
@@ -347,10 +347,9 @@ function clickAutoMove(fromName, card) {
         }
     }
 }
+
 watch(cardStacks, (newCardStacks) => {
     const isDone = checkSolitaireGameDone(newCardStacks);
-    const isDead = checkDeadGame(cardStacks);
-    console.log(`目前是:${isDead ? '死局' : '活局'}`)
     if (isDone) {
         doneModal.value = true;
     }
@@ -365,6 +364,9 @@ const remainCardCounts = computed(() => {
     const { dealer, seven } = getRemainCardCount(cardStacks);
     return { dealer, seven };
 });
+// 是否有可移動的牌(推測)
+const maybeHaveValidMove = computed(() => checkValidMove(cardStacks));
+
 /** 儲存當前狀態到歷史紀錄 */
 function pushStateToHistory() {
     if (history.value.length > 30) {
@@ -439,6 +441,9 @@ function undo() {
                 <button style="font-size: 1.5rem;" @click="resetGame">重置</button>
                 <button style="font-size: 1.5rem;" @click="(e) => showHint(e)">提示</button>
                 <button style="font-size: 1.5rem;" @click="undo">上一步</button>
+                <span>
+                    {{ maybeHaveValidMove ? '(遊戲還有解)' : '(可能無解😎)' }}
+                </span>
             </span>
         </div>
         <GameBoard style="display: flex; position: relative;" @click="startTimer">

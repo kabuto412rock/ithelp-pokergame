@@ -341,6 +341,91 @@ function checkDeadGame(cardStacks) {
 
     return isDeadGame;
 }
+
+/** 取得相同數字不同顏色的撲克牌編碼
+ * @param {Number} pokerValue 對應撲克牌的編號
+ * @returns {Array} [number1, number2] 
+ */
+function getDifferentColorPokerValues(pokerValue) {
+    const red = (Math.floor(pokerValue / 13) % 3) == 0
+    const number = pokerValue % 13;
+    return [number + (red ? 13 : 0), number + (red ? 26 : 39)];
+}
+/** 檢查是否還有效的移動卡牌
+ * @param {CardStacks} cardStacks
+ * @returns {boolean} 有有效移動為true 可能沒有為false
+ */
+function checkValidMove(cardStacks) {
+    const dealerStacksValues = cardStacks['dealerStacks'].map((card) => card.value);
+
+    const seventLastValues = {};
+
+    // 1. `七牌堆`最後一張後面要接的牌存在於`發牌區`中
+    let haveMove1 = SEVEN_STACKS.some((name) => {
+        const stack = cardStacks[name];
+        if (stack.length === 0) {
+            return false;
+        }
+        const lastCard = stack[stack.length - 1];
+        const lastCardNumber = lastCard.value % 13;
+        seventLastValues[name] = lastCard.value;
+        // A後面沒有要接的，但可移動到結算牌堆(回應成功)
+        if (lastCardNumber === 0) return true;
+        const targetPokerValues = getDifferentColorPokerValues(lastCard.value - 1);
+
+        return dealerStacksValues.some((value) => {
+            return targetPokerValues.includes(value);
+        });
+    });
+    if (haveMove1) {
+        console.log("第1活局: `七牌堆`最後一張後面要接的牌存在於`發牌區`");
+        return true;
+    }
+    // 2. 任一`七牌堆`壓在隱藏牌上放的那張可以接在其他`七牌堆`的後面(不包含本身牌堆)
+    let haveMove2 = SEVEN_STACKS.some((name) => {
+        const stack = cardStacks[name];
+        if (stack.length === 0) {
+            return false;
+        }
+        let firstOpenCard = null;
+        for (let i = 1; i < stack.length; i++) {
+            if (stack[i].isOpen && (!stack[i - 1].isOpen)) {
+                firstOpenCard = stack[i];
+                break;
+            }
+        }
+        // 沒有壓在隱藏牌上的牌或 放的那張是K無法接在其他牌堆後面(回應失敗)
+        if (firstOpenCard === null || firstOpenCard.value % 13 === 12) {
+            return false;
+        }
+        // 檢查是否有可以接的牌
+        const targetPokerValues = getDifferentColorPokerValues(firstOpenCard.value + 1)
+        return SEVEN_STACKS.some((name2) => {
+            if (name === name2) return false;
+            if (seventLastValues[name2]) {
+                return targetPokerValues.includes(seventLastValues[name2]);
+            }
+            return false;
+        });
+    });
+
+    if (haveMove2) {
+        console.log("第2活局: 任一`七牌堆`壓在隱藏牌上放的那張可以接在其他`七牌堆`的後面(不包含本身牌堆)");
+        return true;
+    }
+    // 3. `發牌區`任一張牌或`七牌堆`的最後一張 可移動至 `結算牌堆`
+    let haveMove3 = FOUR_SUITS.some((suit, index) => {
+        const stackLen = cardStacks[suit].length;
+        if (stackLen === 13) return false;
+
+        let targetValue = index * 13 + stackLen;
+        return dealerStacksValues.includes(targetValue) || Object.values(seventLastValues).includes(targetValue);
+    });
+    if (haveMove3) {
+        console.log("第3活局: `發牌區`任一張牌或`七牌堆`的最後一張 可移動至 `結算牌堆`");
+    }
+    return haveMove3;
+}
 export {
     geneateShuffleDeck,
     geneateDeck,
@@ -351,5 +436,6 @@ export {
     findFollowDeckName,
     checkSolitaireGameDone,
     getRemainCardCount,
-    checkDeadGame
+    checkDeadGame,
+    checkValidMove
 }
