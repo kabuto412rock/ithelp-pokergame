@@ -4,10 +4,9 @@ import { RouterView, RouterLink } from 'vue-router';
 <template>
   <header>
     <nav class="navbar">
-      <RouterLink to="/" class="nav-link">Home</RouterLink>
+      <a class="nav-link" href="https://ithelp.ithome.com.tw/users/20091550/ironman/6691">IT鐵人賽2023系列文</a>
+      <RouterLink to="/" class="nav-link">紙牌接龍</RouterLink>
       <RouterLink to="/game1" class="nav-link">撲克牌連連看</RouterLink>
-      <RouterLink to="/drag-demo" class="nav-link">紙牌接龍</RouterLink>
-      <RouterLink to="/dealer-area" class="nav-link">發牌區練習</RouterLink>
     </nav>
   </header>
   <RouterView />
